@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <limits>
 #include <random>
+#include <chrono>
 
 #include "Graph.hpp"
 #include "FindShortestPath.hpp"
@@ -20,9 +21,8 @@ int main(void)
     Graph graph(num_nodes);
 
     //set weights
-    random_device rd;  
-    mt19937 gen(rd()); 
-    uniform_int_distribution<> dis(1, 20);
+    mt19937 gen(chrono::system_clock::now().time_since_epoch().count()); 
+    uniform_int_distribution<> dis(70, 100);
 
     for(int i = 0; i < num_nodes; i++)
     {
