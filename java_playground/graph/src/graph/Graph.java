@@ -33,6 +33,14 @@ public class Graph<T, U> {
 	public void addBidirectedEdge(Vertex source, Vertex target, float weight1, float weight2) {
 		addBidirectedEdge(source.getId(), target.getId(), weight1, weight2);
 	}
+	
+	public void addUndirectedEdge(int source, int target, float weight) {
+		addBidirectedEdge(source, target, weight, weight);
+	}
+	
+	public void addUndirectedEdge(Vertex source, Vertex target, float weight) {
+		addUndirectedEdge(source.getId(), target.getId(), weight);
+	}
 
 	public void addDirectedEdge(int source, int target, float weight) {
 		adjacencyList.get(source).put(target, weight);

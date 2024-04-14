@@ -18,6 +18,7 @@ public class Graph<T, U> {
 		edgePropertiesMap = new ArrayList<>();
 		emptyVertexProperty = new VertexProperty<>(null);
 		emptyEdgeProperty = new EdgeProperty<>(null);
+		// Initialize adjacency list, vertex properties map, and edge properties map
 		for (int i = 0; i < numNodes; i++) {
 			adjacencyList.add(new HashMap<>());
 			vertexPropertiesMap.add(emptyVertexProperty);
