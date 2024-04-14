@@ -59,6 +59,9 @@ public class Main {
 		// Get weight of an edge
 		float weight = graph.getEdgeWeight(0, 1);
 		System.out.println("Weight of edge (0, 1): " + weight);
+		
+		// Get size of graph
+		System.out.println("Size of graph: " + graph.size());
 	}
 	
 }
