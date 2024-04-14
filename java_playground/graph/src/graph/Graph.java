@@ -53,6 +53,10 @@ public class Graph<T, U> {
 	public EdgeProperty<U> getEdgeProperty(int source, int target) {
 		return edgePropertiesMap.get(source).get(target);
 	}
+	
+	public EdgeProperty<U> getEdgeProperty(Vertex source, Vertex target) {
+		return getEdgeProperty(source.getId(), target.getId());
+	}
 
 	public float getEdgeWeight(int source, int target) {
 		return adjacencyList.get(source).get(target);
@@ -82,6 +86,10 @@ public class Graph<T, U> {
 		if (property.notEquals(emptyEdgeProperty)) {
 			edgePropertiesMap.get(source).put(target, property);
 		}
+	}
+	
+	public void setEdgeProperty(Vertex source, Vertex target, EdgeProperty<U> property) {
+		setEdgeProperty(source.getId(), target.getId(), property);
 	}
 
 	public void setVertexProperty(int vertex, VertexProperty<T> property) {

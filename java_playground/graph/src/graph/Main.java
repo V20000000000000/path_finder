@@ -19,6 +19,10 @@ public class Main {
 		graph.addUndirectedEdge(v3, v4, 4);
 		graph.addUndirectedEdge(v4, v5, 3);
 		graph.addUndirectedEdge(v2, v5, 8);
+		
+		graph.addDirectedEdge(v1, v4, 5);
+
+		graph.addBidirectedEdge(v1, v5, 5, 1);
 
 		// Set vertex property
 		graph.setVertexProperty(0, new VertexProperty<>(10));
@@ -33,14 +37,16 @@ public class Main {
 		graph.setEdgeProperty(1, 2, new EdgeProperty<>(300));
 		graph.setEdgeProperty(2, 3, new EdgeProperty<>(400));
 		graph.setEdgeProperty(3, 4, new EdgeProperty<>(500));
+		
+		graph.setEdgeProperty(v4, v5, new EdgeProperty<>(600));
 
 		// Get vertex property
 		VertexProperty<Integer> vp = graph.getVertexProperty(0);
 		System.out.println("Vertex property of vertex 0: " + vp.getValue());
 
 		// Get edge property
-		EdgeProperty<Integer> ep = graph.getEdgeProperty(0, 1);
-		System.out.println("Edge property of edge (0, 1): " + ep.getValue());
+		EdgeProperty<Integer> ep = graph.getEdgeProperty(v4, v5);
+		System.out.println("Edge property of edge (v4, v5): " + ep.getValue());
 
 		// Get neighbors of a vertex
 		List<Integer> neighbors = graph.getNeighbors(3);
@@ -54,5 +60,5 @@ public class Main {
 		float weight = graph.getEdgeWeight(0, 1);
 		System.out.println("Weight of edge (0, 1): " + weight);
 	}
-
+	
 }
