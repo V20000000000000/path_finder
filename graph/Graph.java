@@ -1,123 +1,90 @@
+package test;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class Vertex {
-    int id;
-
-    public Vertex(int id) {
-        this.id = id;
-    }
-}
-
-class VertexProperty<T> {
-    T value;
-}
-
-class EdgeProperty<T> {
-    T value;
-
-    public boolean notEquals(EdgeProperty<T> other) {
-        return !value.equals(other.value);
-    }
-}
-
 public class Graph<T, U> {
-    private int numNodes;
-    private List<Map<Integer, Float>> adjacencyList;
-    private List<VertexProperty<T>> vertexPropertiesMap;
-    private List<Map<Integer, EdgeProperty<U>>> edgePropertiesMap;
-    private VertexProperty<T> emptyVertexProperty;
-    private EdgeProperty<U> emptyEdgeProperty;
+	private List<Map<Integer, Float>> adjacencyList;
+	private List<Map<Integer, EdgeProperty<U>>> edgePropertiesMap;
+	private EdgeProperty<U> emptyEdgeProperty;
+	private VertexProperty<T> emptyVertexProperty;
+	private List<VertexProperty<T>> vertexPropertiesMap;
 
-    public Graph(int numNodes) {
-        this.numNodes = numNodes;
-        adjacencyList = new ArrayList<>();
-        vertexPropertiesMap = new ArrayList<>();
-        edgePropertiesMap = new ArrayList<>();
-        emptyVertexProperty = new VertexProperty<>();
-        emptyEdgeProperty = new EdgeProperty<>();
-        for (int i = 0; i < numNodes; i++) {
-            adjacencyList.add(new HashMap<>());
-            vertexPropertiesMap.add(emptyVertexProperty);
-            edgePropertiesMap.add(new HashMap<>());
-        }
-    }
+	public Graph(int numNodes) {
+		adjacencyList = new ArrayList<>();
+		vertexPropertiesMap = new ArrayList<>();
+		edgePropertiesMap = new ArrayList<>();
+		emptyVertexProperty = new VertexProperty<>(null);
+		emptyEdgeProperty = new EdgeProperty<>(null);
+		for (int i = 0; i < numNodes; i++) {
+			adjacencyList.add(new HashMap<>());
+			vertexPropertiesMap.add(emptyVertexProperty);
+			edgePropertiesMap.add(new HashMap<>());
+		}
+	}
 
-    public void addVertex(Vertex vertex) {
-        adjacencyList.set(vertex.id, new HashMap<>());
-        vertexPropertiesMap.set(vertex.id, emptyVertexProperty);
-    }
+	public void addBidirectedEdge(int source, int target, float weight1, float weight2) {
+		addDirectedEdge(source, target, weight1);
+		addDirectedEdge(target, source, weight2);
+	}
 
-    public void setVertexProperty(int vertex, VertexProperty<T> property) {
-        vertexPropertiesMap.set(vertex, property);
-    }
+	public void addBidirectedEdge(Vertex source, Vertex target, float weight1, float weight2) {
+		addBidirectedEdge(source.getId(), target.getId(), weight1, weight2);
+	}
 
-    public void setVertexProperty(Vertex vertex, VertexProperty<T> property) {
-        setVertexProperty(vertex.id, property);
-    }
+	public void addDirectedEdge(int source, int target, float weight) {
+		adjacencyList.get(source).put(target, weight);
+	}
 
-    public VertexProperty<T> getVertexProperty(int vertex) {
-        return vertexPropertiesMap.get(vertex);
-    }
+	public void addDirectedEdge(Vertex source, Vertex target, float weight) {
+		addDirectedEdge(source.getId(), target.getId(), weight);
+	}
 
-    public VertexProperty<T> getVertexProperty(Vertex vertex) {
-        return getVertexProperty(vertex.id);
-    }
+	public EdgeProperty<U> getEdgeProperty(int source, int target) {
+		return edgePropertiesMap.get(source).get(target);
+	}
 
-    public void addDirectedEdge(int source, int target, float weight) {
-        adjacencyList.get(source).put(target, weight);
-    }
+	public float getEdgeWeight(int source, int target) {
+		return adjacencyList.get(source).get(target);
+	}
 
-    public void addDirectedEdge(Vertex source, Vertex target, float weight) {
-        addDirectedEdge(source.id, target.id, weight);
-    }
+	public float getEdgeWeight(Vertex source, Vertex target) {
+		return getEdgeWeight(source.getId(), target.getId());
+	}
 
-    public void addBidirectedEdge(int source, int target, float weight1, float weight2) {
-        addDirectedEdge(source, target, weight1);
-        addDirectedEdge(target, source, weight2);
-    }
+	public List<Integer> getNeighbors(int vertex) {
+		return new ArrayList<>(adjacencyList.get(vertex).keySet());
+	}
 
-    public void addBidirectedEdge(Vertex source, Vertex target, float weight1, float weight2) {
-        addBidirectedEdge(source.id, target.id, weight1, weight2);
-    }
+	public List<Integer> getNeighbors(Vertex vertex) {
+		return getNeighbors(vertex.getId());
+	}
 
-    public void setEdgeProperty(int source, int target, EdgeProperty<U> property) {
-        if (!property.notEquals(emptyEdgeProperty)) {
-            edgePropertiesMap.get(source).put(target, property);
-        }
-    }
+	public VertexProperty<T> getVertexProperty(int vertex) {
+		return vertexPropertiesMap.get(vertex);
+	}
 
-    public EdgeProperty<U> getEdgeProperty(int source, int target) {
-        return edgePropertiesMap.get(source).get(target);
-    }
+	public VertexProperty<T> getVertexProperty(Vertex vertex) {
+		return getVertexProperty(vertex.getId());
+	}
 
-    public List<Integer> getNeighbors(int vertex) {
-        List<Integer> neighbors = new ArrayList<>();
-        for (Integer neighbor : adjacencyList.get(vertex).keySet()) {
-            neighbors.add(neighbor);
-        }
-        return neighbors;
-    }
+	public void setEdgeProperty(int source, int target, EdgeProperty<U> property) {
+		if (property.notEquals(emptyEdgeProperty)) {
+			edgePropertiesMap.get(source).put(target, property);
+		}
+	}
 
-    public List<Integer> getNeighbors(Vertex vertex) {
-        return getNeighbors(vertex.id);
-    }
+	public void setVertexProperty(int vertex, VertexProperty<T> property) {
+		vertexPropertiesMap.set(vertex, property);
+	}
 
-    public float getEdgeWeight(int source, int target) {
-        if (adjacencyList.get(source).containsKey(target)) {
-            return adjacencyList.get(source).get(target);
-        } else {
-            return -1.0f;
-        }
-    }
+	public void setVertexProperty(Vertex vertex, VertexProperty<T> property) {
+		setVertexProperty(vertex.getId(), property);
+	}
 
-    public float getEdgeWeight(Vertex source, Vertex target) {
-        return getEdgeWeight(source.id, target.id);
-    }
-
-    public int size() {
-        return adjacencyList.size();
-    }
+	public int size() {
+		return adjacencyList.size();
+	}
 }

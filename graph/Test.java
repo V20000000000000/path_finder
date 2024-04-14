@@ -1,8 +1,8 @@
-package graph;
+package test;
 
 import java.util.List;
 
-public class Main {
+public class Test {
 
 	public static void main(String[] args) {
 		Graph<Integer, Integer> graph = new Graph<>(5);

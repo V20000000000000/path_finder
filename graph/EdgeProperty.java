@@ -1,4 +1,4 @@
-package graph;
+package test;
 
 public class EdgeProperty<T> {
 	private T value;
