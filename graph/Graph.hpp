@@ -5,76 +5,128 @@
 #include <vector>
 #include <map>
 
-struct Vertex {
-    int Vertex_id;
+struct vertex {
+    int id;
 };
 
 template <class vertex_property_type, class edge_property_type>
 class Graph {
     private:
-        int num_nodes;
-        int max_id;
+        int num_nodes; // number of nodes in the graph
         std::vector<std::map<int, float>> adjacencyList; // adjacency list (each vertex has a map of neighbors and edge weights)
-        std::vector<vertex_property_type> vertexProperties_map; // map of vertex properties   (vertex id, vertex property)
-        std::vector<std::map<int, edge_property_type>> edgeProperties_map; // map of edge properties (edge id, edge property)
+        std::vector<vertex_property_type> vertexPropertiesMap; // map of vertex properties   (vertex id, vertex property)
+        std::vector<std::map<int, edge_property_type>> edgePropertiesMap; // map of edge properties (edge id, edge property)
+
+        // Add empty property values
+        vertex_property_type emptyVertexProperty;
+        edge_property_type emptyEdgeProperty;
     public:
-        Graph(int num_nodes): num_nodes(num_nodes), max_id(0){
+        Graph(int num_nodes) : num_nodes(num_nodes), emptyVertexProperty(), emptyEdgeProperty() 
+        {
             adjacencyList.resize(num_nodes);
-            vertexProperties_map.resize(num_nodes);
-            edgeProperties_map.resize(num_nodes);
+            vertexPropertiesMap.resize(num_nodes);
+            edgePropertiesMap.resize(num_nodes);
         }
 
-        // addVertex (vertex)
-        void addVertex(Vertex &vertex) {
-            // Set the new vertex ID to be one more than the maximum
-            vertex.Vertex_id = max_id;
-
-            std::cout << "Vertex ID: " << vertex.Vertex_id << std::endl;
-
-            // Set the new vertex and its properties directly at the specified index
-            adjacencyList[vertex.Vertex_id] = std::map<int, float>();
-            vertexProperties_map[vertex.Vertex_id] = vertex_property_type(vertex.Vertex_id);
-            max_id++;
+        // addVertex
+        void addVertex(vertex vertex)
+        {
+            adjacencyList[vertex.id] = std::map<int, float>();
+            vertexPropertiesMap[vertex.id] = emptyVertexProperty;
         }
 
-        // addEdge   (source, target, weight)
-        void addEdge(Vertex source, Vertex target, float weight) {
-            // Check if source and target vertices exist
-            if (source.Vertex_id >= num_nodes || target.Vertex_id >= num_nodes) {
-                // One or both of the vertices do not exist in the graph
-                std::cerr << "Error: One or both of the vertices do not exist in the graph." << std::endl;
-                return;
+        // Methods for setting and getting vertex properties
+        void setVertexProperty(int vertex, const vertex_property_type &property)
+        {
+            vertexPropertiesMap[vertex] = property;
+        }
+
+        void setVertexProperty(vertex vertex, const vertex_property_type &property)
+        {
+            setVertexProperty(vertex.id, property);
+        }
+
+        // getVertexProperty
+        vertex_property_type getVertexProperty(int vertex) const
+        {
+            return vertexPropertiesMap[vertex];
+        }
+
+        vertex_property_type getVertexProperty(vertex vertex) const
+        {
+            return getVertexProperty(vertex.id);
+        }
+
+        // addEdge (source, target, weight)
+        void addDirectedEdge(int source, int target, float weight)
+        {
+            adjacencyList[source][target] = weight;
+        }
+
+        void addDirectedEdge(vertex &source, vertex &target, float weight)
+        {
+            addDirectedEdge(source.id, target.id, weight);
+        }
+
+        void addBidirectedEdge(int source, int target, float weight1, float weight2)
+        {
+            addDirectedEdge(source, target, weight1);
+            addDirectedEdge(target, source, weight2);
+        }
+
+        void addBidirectedEdge(vertex &source, vertex &target, float weight1, float weight2)
+        {
+            addBidirectedEdge(source.id, target.id, weight1, weight2);
+        }
+
+        // Methods for Edge setting
+        void setEdgeProperty(int source, int target, const edge_property_type &property)
+        {
+            if (property != emptyEdgeProperty) {
+                edgePropertiesMap[source][target] = property;
+            }else{
+                std::cout << "Edge property is empty" << std::endl;
             }
+        }
 
-            // Update adjacency list
-            adjacencyList[source.Vertex_id][target.Vertex_id] = weight;
-            adjacencyList[target.Vertex_id][source.Vertex_id] = weight;
-
-            // Update edge properties map
-            edgeProperties_map[source.Vertex_id][target.Vertex_id] = weight;
-            edgeProperties_map[target.Vertex_id][source.Vertex_id] = weight;
+        edge_property_type getEdgeProperty(int source, int target) const
+        {
+            return edgePropertiesMap[source].at(target);
         }
 
         // getNeighbors
-        std::vector<int> getNeighbors(Vertex vertex) {
+        std::vector<int> getNeighbors(int vertex)  const
+        {
             std::vector<int> neighbors;
-            for (auto neighbor : adjacencyList[vertex.Vertex_id]) {
+            for (auto neighbor : adjacencyList[vertex]) {
                 neighbors.push_back(neighbor.first);
             }
             return neighbors;
         }
 
+        std::vector<int> getNeighbors(vertex vertex)  const
+        {
+            return getNeighbors(vertex.id);
+        }
+
         // getEdgeWeight
-        float getEdgeWeight(Vertex source, Vertex target) {
-            if (adjacencyList[source.Vertex_id].find(target.Vertex_id) != adjacencyList[source.Vertex_id].end()) {
-                return adjacencyList[source.Vertex_id][target.Vertex_id];
+        float getEdgeWeight(int source, int target) 
+        {
+            if (adjacencyList[source].find(target) != adjacencyList[source].end()) {
+                return adjacencyList[source].at(target);
             } else {
                 return -1.0f; // Indicate edge doesn't exist
             }
         }
 
+        float getEdgeWeight(vertex source, vertex target) 
+        {
+            return getEdgeWeight(source.id, target.id);
+        }
+
         // size (adjacency list size)
-        int size() {
+        int size() 
+        {
             return adjacencyList.size();
         }
 };

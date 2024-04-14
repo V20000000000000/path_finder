@@ -9,34 +9,25 @@ int main()
 {
     Graph<int, int> g(5);
 
+    vertex v1{1}, v2{2}, v3{3}, v4{4}, v5{5};
+
     cout << "Size of the adjacency list: " << g.size() << endl;
 
     //addVertex
-    Vertex v1;
     g.addVertex(v1);
-
-    Vertex v2;
     g.addVertex(v2);
-
-    Vertex v3;
     g.addVertex(v3);
-
-    Vertex v4;
     g.addVertex(v4);
-
-    Vertex v5;
     g.addVertex(v5);
 
     cout << "test" << endl;
 
     //addEdge
-    g.addEdge(v1, v2, 1);
-    g.addEdge(v1, v3, 7);
-    g.addEdge(v1, v4, 1);
-    g.addEdge(v1, v5, 3);
-    g.addEdge(v2, v3, 1);
-    g.addEdge(v2, v4, 5);
-    g.addEdge(v2, v5, 1);
+    g.addBidirectedEdge(v1, v2, 1, 1);
+    g.addBidirectedEdge(v1, v3, 7, 7);
+    g.addBidirectedEdge(v1, v4, 1, 5);
+    g.addDirectedEdge(v1, v5, 3);
+    g.addDirectedEdge(v2, v3, 1);
 
     //getNeighbors
     vector<int> neighbors = g.getNeighbors(v1);
