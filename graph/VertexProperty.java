@@ -1,4 +1,4 @@
-package test;
+package graph;
 
 public class VertexProperty<T> {
 	private T value;

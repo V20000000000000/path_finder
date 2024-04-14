@@ -1,4 +1,4 @@
-package test;
+package graph;
 
 class Vertex {
 	private int id;
