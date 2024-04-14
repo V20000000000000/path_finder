@@ -11,12 +11,12 @@ struct Vertex
 
 // Define a generic class for vertex property
 template <class T>
-struct VertexProperty
+struct vertexProperty
 {
     T value;
     // You can add more properties here as needed
     // overloading the operator!=
-    bool operator!=(const VertexProperty<T> &other) const
+    bool operator!=(const vertexProperty<T> &other) const
     {
         return value != other.value;
     }
@@ -24,12 +24,12 @@ struct VertexProperty
 
 // Define a generic class for edge property
 template <class T>
-struct EdgeProperty
+struct edgeProperty
 {
     T value;
     // You can add more properties here as needed
     // overloading the operator!=
-    bool operator!=(const EdgeProperty<T> &other) const
+    bool operator!=(const edgeProperty<T> &other) const
     {
         return value != other.value;
     }
@@ -116,23 +116,23 @@ public:
     }
 
     // Methods for setting and getting vertex properties
-    void setVertexProperty(int vertex, const vertex_property_type &property)
+    void setvertexProperty(int vertex, const vertex_property_type &property)
     {
         vertex_property_map[vertex] = property;
     }
 
-    vertex_property_type getVertexProperty(int vertex) const
+    vertex_property_type getvertexProperty(int vertex) const
     {
         return vertex_property_map[vertex];
     }
 
     // Methods for setting and getting edge properties
-    void setEdgeProperty(int source, int target, const edge_property_type &property)
+    void setedgeProperty(int source, int target, const edge_property_type &property)
     {
         edge_property_map[source][target] = property;
     }
 
-    edge_property_type getEdgeProperty(int source, int target) const
+    edge_property_type getedgeProperty(int source, int target) const
     {
         return edge_property_map[source].at(target);
     }
@@ -140,7 +140,7 @@ public:
 
 int main()
 {
-    Graph<VertexProperty<int>, EdgeProperty<int>> graph(5);
+    Graph<vertexProperty<int>, edgeProperty<int>> graph(5);
 
     Vertex v1{0}, v2{1}, v3{2}, v4{3}, v5{4};
 
@@ -151,25 +151,25 @@ int main()
     graph.addDirectedEdge(v4, v5, 5);
 
     // Set vertex property
-    graph.setVertexProperty(0, VertexProperty<int>{10});
-    graph.setVertexProperty(1, VertexProperty<int>{20});
-    graph.setVertexProperty(2, VertexProperty<int>{30});
-    graph.setVertexProperty(3, VertexProperty<int>{40});
-    graph.setVertexProperty(4, VertexProperty<int>{50});
+    graph.setvertexProperty(0, vertexProperty<int>{10});
+    graph.setvertexProperty(1, vertexProperty<int>{20});
+    graph.setvertexProperty(2, vertexProperty<int>{30});
+    graph.setvertexProperty(3, vertexProperty<int>{40});
+    graph.setvertexProperty(4, vertexProperty<int>{50});
 
     // Set edge property
-    graph.setEdgeProperty(0, 1, EdgeProperty<int>{100});
-    graph.setEdgeProperty(0, 2, EdgeProperty<int>{200});
-    graph.setEdgeProperty(1, 2, EdgeProperty<int>{300});
-    graph.setEdgeProperty(2, 3, EdgeProperty<int>{400});
-    graph.setEdgeProperty(3, 4, EdgeProperty<int>{500});
+    graph.setedgeProperty(0, 1, edgeProperty<int>{100});
+    graph.setedgeProperty(0, 2, edgeProperty<int>{200});
+    graph.setedgeProperty(1, 2, edgeProperty<int>{300});
+    graph.setedgeProperty(2, 3, edgeProperty<int>{400});
+    graph.setedgeProperty(3, 4, edgeProperty<int>{500});
 
     // Get vertex property
-    VertexProperty<int> vp = graph.getVertexProperty(0);
+    vertexProperty<int> vp = graph.getvertexProperty(0);
     cout << "Vertex property of vertex 0: " << vp.value << endl;
 
     // Get edge property
-    EdgeProperty<int> ep = graph.getEdgeProperty(0, 1);
+    edgeProperty<int> ep = graph.getedgeProperty(0, 1);
     cout << "Edge property of edge (0, 1): " << ep.value << endl;
 
     // Get neighbors of a vertex

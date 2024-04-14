@@ -7,81 +7,51 @@ using namespace std;
 
 int main()
 {
-    Graph<int, int> g(5);
+    Graph<vertexProperty<int>, edgeProperty<int>> graph(5);
 
-    vertex v1{1}, v2{2}, v3{3}, v4{4}, v5{5};
+    vertex v1{0}, v2{1}, v3{2}, v4{3}, v5{4};
 
-    cout << "Size of the adjacency list: " << g.size() << endl;
+    graph.addDirectedEdge(v1, v2, 1);
+    graph.addDirectedEdge(v1, v3, 2);
+    graph.addDirectedEdge(v2, v3, 3);
+    graph.addDirectedEdge(v3, v4, 4);
+    graph.addDirectedEdge(v4, v5, 5);
 
-    //addVertex
-    g.addVertex(v1);
-    g.addVertex(v2);
-    g.addVertex(v3);
-    g.addVertex(v4);
-    g.addVertex(v5);
+    // Set vertex property
+    graph.setvertexProperty(0, vertexProperty<int>{10});
+    graph.setvertexProperty(1, vertexProperty<int>{20});
+    graph.setvertexProperty(2, vertexProperty<int>{30});
+    graph.setvertexProperty(3, vertexProperty<int>{40});
+    graph.setvertexProperty(4, vertexProperty<int>{50});
 
-    cout << "test" << endl;
+    // Set edge property
+    graph.setedgeProperty(0, 1, edgeProperty<int>{100});
+    graph.setedgeProperty(0, 2, edgeProperty<int>{200});
+    graph.setedgeProperty(1, 2, edgeProperty<int>{300});
+    graph.setedgeProperty(2, 3, edgeProperty<int>{400});
+    graph.setedgeProperty(3, 4, edgeProperty<int>{500});
 
-    //addEdge
-    g.addBidirectedEdge(v1, v2, 1, 1);
-    g.addBidirectedEdge(v1, v3, 7, 7);
-    g.addBidirectedEdge(v1, v4, 1, 5);
-    g.addDirectedEdge(v1, v5, 3);
-    g.addDirectedEdge(v2, v3, 1);
+    // Get vertex property
+    vertexProperty<int> vp = graph.getvertexProperty(0);
+    cout << "Vertex property of vertex 0: " << vp.value << endl;
 
-    //getNeighbors
-    vector<int> neighbors = g.getNeighbors(v1);
-    cout << "Neighbors of vertex 1: ";
-    for (unsigned i = 0; i < neighbors.size(); i++)
+    // Get edge property
+    edgeProperty<int> ep = graph.getedgeProperty(0, 1);
+    cout << "Edge property of edge (0, 1): " << ep.value << endl;
+
+    // Get neighbors of a vertex
+    vector<int> neighbors = graph.getNeighbors(0);
+    cout << "Neighbors of vertex 0: ";
+    for (int neighbor : neighbors)
     {
-        cout << neighbors[i] << " ";
+        cout << neighbor << " ";
     }
     cout << endl;
 
-    neighbors = g.getNeighbors(v2);
-    cout << "Neighbors of vertex 2: ";
-    for (unsigned i = 0; i < neighbors.size(); i++)
-    {
-        cout << neighbors[i] << " ";
-    }
-    cout << endl;
+    // Get weight of an edge
+    float weight = graph.getEdgeWeight(0, 1);
+    cout << "Weight of edge (0, 1): " << weight << endl;
 
-    neighbors = g.getNeighbors(v3);
-    cout << "Neighbors of vertex 3: ";
-    for (unsigned i = 0; i < neighbors.size(); i++)
-    {
-        cout << neighbors[i] << " ";
-    }
-    cout << endl;
-
-    neighbors = g.getNeighbors(v4);
-    cout << "Neighbors of vertex 4: ";
-    for (unsigned i = 0; i < neighbors.size(); i++)
-    {
-        cout << neighbors[i] << " ";
-    }
-    cout << endl;
-
-    neighbors = g.getNeighbors(v5);
-    cout << "Neighbors of vertex 5: ";
-    for (unsigned i = 0; i < neighbors.size(); i++)
-    {
-        cout << neighbors[i] << " ";
-    }
-    cout << endl;
-
-    //getEdgeWeight
-    cout << "Edge weight between vertex 1 and vertex 2: " << g.getEdgeWeight(v1, v2) << endl;
-    cout << "Edge weight between vertex 1 and vertex 3: " << g.getEdgeWeight(v1, v3) << endl;
-    cout << "Edge weight between vertex 1 and vertex 4: " << g.getEdgeWeight(v1, v4) << endl;
-    cout << "Edge weight between vertex 1 and vertex 5: " << g.getEdgeWeight(v1, v5) << endl;
-    cout << "Edge weight between vertex 2 and vertex 3: " << g.getEdgeWeight(v2, v3) << endl;
-    cout << "Edge weight between vertex 2 and vertex 4: " << g.getEdgeWeight(v2, v4) << endl;
-    cout << "Edge weight between vertex 2 and vertex 5: " << g.getEdgeWeight(v2, v5) << endl;
-    cout << "Edge weight between vertex 5 and vertex 2: " << g.getEdgeWeight(v5, v2) << endl;
-    cout << "Edge weight between vertex 1 and vertex 1: " << g.getEdgeWeight(v1, v1) << endl;
-
-    //size(adjacency list size)
-    cout << "Size of the adjacency list: " << g.size() << endl;
+    return 0;
     
 }

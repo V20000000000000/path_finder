@@ -9,6 +9,24 @@ struct vertex {
     int id;
 };
 
+template <class T>
+struct vertexProperty 
+{
+    T value;
+};
+
+template <class T>
+struct edgeProperty 
+{
+    T value;
+
+    // Overloading the operator!=
+    bool operator!=(const edgeProperty<T> &other) const
+    {
+        return value != other.value;
+    }
+};
+
 template <class vertex_property_type, class edge_property_type>
 class Graph {
     private:
@@ -18,10 +36,10 @@ class Graph {
         std::vector<std::map<int, edge_property_type>> edgePropertiesMap; // map of edge properties (edge id, edge property)
 
         // Add empty property values
-        vertex_property_type emptyVertexProperty;
-        edge_property_type emptyEdgeProperty;
+        vertex_property_type emptyvertexProperty;
+        edge_property_type emptyedgeProperty;
     public:
-        Graph(int num_nodes) : num_nodes(num_nodes), emptyVertexProperty(), emptyEdgeProperty() 
+        Graph(int num_nodes) : num_nodes(num_nodes), emptyvertexProperty(), emptyedgeProperty() 
         {
             adjacencyList.resize(num_nodes);
             vertexPropertiesMap.resize(num_nodes);
@@ -32,29 +50,29 @@ class Graph {
         void addVertex(vertex vertex)
         {
             adjacencyList[vertex.id] = std::map<int, float>();
-            vertexPropertiesMap[vertex.id] = emptyVertexProperty;
+            vertexPropertiesMap[vertex.id] = emptyvertexProperty;
         }
 
         // Methods for setting and getting vertex properties
-        void setVertexProperty(int vertex, const vertex_property_type &property)
+        void setvertexProperty(int vertex, const vertex_property_type &property)
         {
             vertexPropertiesMap[vertex] = property;
         }
 
-        void setVertexProperty(vertex vertex, const vertex_property_type &property)
+        void setvertexProperty(vertex vertex, const vertex_property_type &property)
         {
-            setVertexProperty(vertex.id, property);
+            setvertexProperty(vertex.id, property);
         }
 
-        // getVertexProperty
-        vertex_property_type getVertexProperty(int vertex) const
+        // getvertexProperty
+        vertex_property_type getvertexProperty(int vertex) const
         {
             return vertexPropertiesMap[vertex];
         }
 
-        vertex_property_type getVertexProperty(vertex vertex) const
+        vertex_property_type getvertexProperty(vertex vertex) const
         {
-            return getVertexProperty(vertex.id);
+            return getvertexProperty(vertex.id);
         }
 
         // addEdge (source, target, weight)
@@ -80,16 +98,16 @@ class Graph {
         }
 
         // Methods for Edge setting
-        void setEdgeProperty(int source, int target, const edge_property_type &property)
+        void setedgeProperty(int source, int target, const edge_property_type &property)
         {
-            if (property != emptyEdgeProperty) {
+            if (property != emptyedgeProperty) {
                 edgePropertiesMap[source][target] = property;
             }else{
-                std::cout << "Edge property is empty" << std::endl;
+                //std::cout << "Edge property is empty" << std::endl;
             }
         }
 
-        edge_property_type getEdgeProperty(int source, int target) const
+        edge_property_type getedgeProperty(int source, int target) const
         {
             return edgePropertiesMap[source].at(target);
         }
