@@ -11,6 +11,12 @@ int main()
 
     vertex v1{0}, v2{1}, v3{2}, v4{3}, v5{4};
 
+    graph.addVertex(v1);
+    graph.addVertex(v2);
+    graph.addVertex(v3);
+    graph.addVertex(v4);
+    graph.addVertex(v5);
+
     graph.addDirectedEdge(v1, v2, 1);
     graph.addDirectedEdge(v1, v3, 2);
     graph.addDirectedEdge(v2, v3, 3);
@@ -25,18 +31,18 @@ int main()
     graph.setvertexProperty(4, vertexProperty<int>{50});
 
     // Set edge property
-    graph.setedgeProperty(0, 1, edgeProperty<int>{100});
-    graph.setedgeProperty(0, 2, edgeProperty<int>{200});
-    graph.setedgeProperty(1, 2, edgeProperty<int>{300});
-    graph.setedgeProperty(2, 3, edgeProperty<int>{400});
-    graph.setedgeProperty(3, 4, edgeProperty<int>{500});
+    graph.setEdgeProperty(0, 1, edgeProperty<int>{100});
+    graph.setEdgeProperty(0, 2, edgeProperty<int>{200});
+    graph.setEdgeProperty(1, 2, edgeProperty<int>{300});
+    graph.setEdgeProperty(2, 3, edgeProperty<int>{400});
+    graph.setEdgeProperty(3, 4, edgeProperty<int>{500});
 
     // Get vertex property
     vertexProperty<int> vp = graph.getvertexProperty(0);
     cout << "Vertex property of vertex 0: " << vp.value << endl;
 
     // Get edge property
-    edgeProperty<int> ep = graph.getedgeProperty(0, 1);
+    edgeProperty<int> ep = graph.getEdgeProperty(0, 1);
     cout << "Edge property of edge (0, 1): " << ep.value << endl;
 
     // Get neighbors of a vertex

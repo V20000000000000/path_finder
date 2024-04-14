@@ -98,7 +98,7 @@ class Graph {
         }
 
         // Methods for Edge setting
-        void setedgeProperty(int source, int target, const edge_property_type &property)
+        void setEdgeProperty(int source, int target, const edge_property_type &property)
         {
             if (property != emptyedgeProperty) {
                 edgePropertiesMap[source][target] = property;
@@ -107,7 +107,7 @@ class Graph {
             }
         }
 
-        edge_property_type getedgeProperty(int source, int target) const
+        edge_property_type getEdgeProperty(int source, int target) const
         {
             return edgePropertiesMap[source].at(target);
         }
