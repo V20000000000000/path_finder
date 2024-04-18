@@ -18,7 +18,6 @@ public class Graph<T, U> {
 		edgePropertiesMap = new ArrayList<>();
 		emptyVertexProperty = new VertexProperty<>(null);
 		emptyEdgeProperty = new EdgeProperty<>(null);
-		// Initialize adjacency list, vertex properties map, and edge properties map
 		for (int i = 0; i < numNodes; i++) {
 			adjacencyList.add(new HashMap<>());
 			vertexPropertiesMap.add(emptyVertexProperty);
@@ -34,6 +33,14 @@ public class Graph<T, U> {
 	public void addBidirectedEdge(Vertex source, Vertex target, float weight1, float weight2) {
 		addBidirectedEdge(source.getId(), target.getId(), weight1, weight2);
 	}
+	
+	public void addUndirectedEdge(int source, int target, float weight) {
+		addBidirectedEdge(source, target, weight, weight);
+	}
+	
+	public void addUndirectedEdge(Vertex source, Vertex target, float weight) {
+		addUndirectedEdge(source.getId(), target.getId(), weight);
+	}
 
 	public void addDirectedEdge(int source, int target, float weight) {
 		adjacencyList.get(source).put(target, weight);
@@ -45,6 +52,10 @@ public class Graph<T, U> {
 
 	public EdgeProperty<U> getEdgeProperty(int source, int target) {
 		return edgePropertiesMap.get(source).get(target);
+	}
+	
+	public EdgeProperty<U> getEdgeProperty(Vertex source, Vertex target) {
+		return getEdgeProperty(source.getId(), target.getId());
 	}
 
 	public float getEdgeWeight(int source, int target) {
@@ -75,6 +86,10 @@ public class Graph<T, U> {
 		if (property.notEquals(emptyEdgeProperty)) {
 			edgePropertiesMap.get(source).put(target, property);
 		}
+	}
+	
+	public void setEdgeProperty(Vertex source, Vertex target, EdgeProperty<U> property) {
+		setEdgeProperty(source.getId(), target.getId(), property);
 	}
 
 	public void setVertexProperty(int vertex, VertexProperty<T> property) {

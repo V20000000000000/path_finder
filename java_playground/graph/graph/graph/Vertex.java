@@ -1,9 +1,9 @@
 package graph;
 
-class Vertex {
+public class Vertex {
 	private int id;
 
-	Vertex(int id) {
+	public Vertex(int id) {
 		this.id = id;
 	}
 

@@ -16,6 +16,12 @@ struct vertexProperty
 };
 
 template <class T>
+struct NoProperty 
+{
+    
+};
+
+template <class T>
 struct edgeProperty 
 {
     T value;
@@ -102,6 +108,20 @@ class Graph {
         {
             if (property != emptyedgeProperty) {
                 edgePropertiesMap[source][target] = property;
+            }else{
+                //std::cout << "Edge property is empty" << std::endl;
+            }
+        }
+
+        void setEdgeProperty(vertex source, vertex target, const edge_property_type &property)
+        {
+                edgePropertiesMap[source.id][target.id] = property;
+        }
+
+        void setEdgeProperty(vertex source, vertex target, const edge_property_type &property)
+        {
+            if (property != emptyedgeProperty) {
+                edgePropertiesMap[source.id][target.id] = property;
             }else{
                 //std::cout << "Edge property is empty" << std::endl;
             }
