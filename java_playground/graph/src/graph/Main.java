@@ -44,6 +44,8 @@ public class Main {
 		graph.setEdgeProperty(v5, v1, new EdgeProperty<>(700));
 		
 		graph.setEdgeProperty(v4, v5, new EdgeProperty<>(600));
+		graph.setEdgeProperty(v5, v2, new EdgeProperty<>(800));
+		graph.setEdgeProperty(v5, v4, new EdgeProperty<>(800));
 
 		//Get vertex property
 		VertexProperty<Integer> vp = graph.getVertexProperty(0);
@@ -76,17 +78,21 @@ public class Main {
 		    Map<Float, EdgeProperty<Integer>> edgeInfo = entry.getValue();
 		    for (Map.Entry<Float, EdgeProperty<Integer>> edgeEntry : edgeInfo.entrySet()) {
 		        Float edgeWeight = edgeEntry.getKey();
-		        EdgeProperty<Integer> edgeProperty = edgeEntry.getValue();
+		        Integer edgeProperty = edgeEntry.getValue().getValue();
 		        System.out.println("(v5, v" + (target+1) + "), Weight: " + edgeWeight + ", Property: " + edgeProperty);
 		    }
 		}
 		
-		Map<Integer, Float> mi = graph.getInEdges(v5);
+		Map<Integer, Map<Float, EdgeProperty<Integer>>> mi = graph.getOutEdges(v5);
 		System.out.println("v5 input edges: ");
-		for (Map.Entry<Integer, Float> entry : mi.entrySet()) {
-		    Integer target = entry.getKey(); 
-		    Float edgeweight = entry.getValue(); 
-		    System.out.println("Target: " + target + ", Weight: " + edgeweight);
+		for (Map.Entry<Integer, Map<Float, EdgeProperty<Integer>>> entry : mi.entrySet()) {
+		    Integer target = entry.getKey();
+		    Map<Float, EdgeProperty<Integer>> edgeInfo = entry.getValue();
+		    for (Map.Entry<Float, EdgeProperty<Integer>> edgeEntry : edgeInfo.entrySet()) {
+		        Float edgeWeight = edgeEntry.getKey();
+		        Integer edgeProperty = edgeEntry.getValue().getValue();
+		        System.out.println("(v" + (target+1) + ", v5)" + ", Weight: " + edgeWeight + ", Property: " + edgeProperty);
+		    }
 		}
 		
 		Map<Integer, VertexProperty<Integer>> mv = graph.getAllVertices();

@@ -101,20 +101,24 @@ public class Graph<T, U> {
 		return getOutEdges(vertex.getId());
 	}
 	
-	public Map<Integer, Float> getInEdges(int vertex) {
-		Map<Integer, Float> mi = new HashMap<>();
+	public Map<Integer, Map<Float, EdgeProperty<U>>> getInEdges(int vertex) {
+	    Map<Integer, Map<Float, EdgeProperty<U>>> inEdges = new HashMap<>();
 	    for (int i = 0; i < adjacencyList.size(); i++) {
 	        for (Map.Entry<Integer, Float> entry : adjacencyList.get(i).entrySet()) {
 	            if (entry.getKey() == vertex) {
-	                mi.put(i, entry.getValue());
+	            	float weight = adjacencyList.get(i).get(vertex);
+	    	        EdgeProperty<U> edgeProperty = getEdgeProperty(i, vertex);
+	    	        Map<Float, EdgeProperty<U>> edgeInfo = new HashMap<>();
+	    	        edgeInfo.put(weight, edgeProperty);
+	    	        inEdges.put(i, edgeInfo);
 	            }
 	        }
 	    }
-	    return mi;
+	    return inEdges;
 	}
 
 	
-	public Map<Integer, Float> getInEdges(Vertex vertex) {
+	public Map<Integer, Map<Float, EdgeProperty<U>>> getInEdges(Vertex vertex) {
 		return getInEdges(vertex.getId());
 	}
 	
