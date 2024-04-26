@@ -245,7 +245,7 @@ int main() {
 
     // Create source and target vertices
     Vertex source = v11;
-    Vertex target = v2;
+    Vertex target = v7;
 
     // Run Theta* algorithm
     std::stack<Vertex> path = ThetaStar::run(source, target, graph, heuristic, obstacles);
