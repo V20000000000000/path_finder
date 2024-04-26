@@ -30,13 +30,6 @@ int main()
     graph.setvertexProperty(3, vertexProperty<int>{40});
     graph.setvertexProperty(4, vertexProperty<int>{50});
 
-    // Set edge property
-    graph.setEdgeProperty(0, 1, edgeProperty<int>{100});
-    graph.setEdgeProperty(0, 2, edgeProperty<int>{200});
-    graph.setEdgeProperty(1, 2, edgeProperty<int>{300});
-    graph.setEdgeProperty(2, 3, edgeProperty<int>{400});
-    graph.setEdgeProperty(3, 4, edgeProperty<int>{500});
-
     // Get vertex property
     vertexProperty<int> vp = graph.getvertexProperty(0);
     cout << "Vertex property of vertex 0: " << vp.value << endl;

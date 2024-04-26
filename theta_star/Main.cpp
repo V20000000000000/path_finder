@@ -71,24 +71,29 @@ public:
         double dx = x1 - x0;
         double dy = y1 - y0;
         double dz = z1 - z0;
+        cout << "x0: " << x0 << " y0: " << y0 << " z0: " << z0  << endl << "x1: " << x1 << " y1: " << y1 << " z1: " << z1 << endl;
+        cout << "dx: " << dx << " dy: " << dy << " dz: " << dz << endl;
         for (const auto& obstacle : obstacles) {
             for(double step = 0; step < 1; step += 0.001)
             {
                 double x = x0 + dx * step;
                 double y = y0 + dy * step;
                 double z = z0 + dz * step;
-                if (x >= obstacle.minX && x <= obstacle.maxX && y >= obstacle.minY && y <= obstacle.maxY && z >= obstacle.minZ && z <= obstacle.maxZ) {
+                if (x > obstacle.minX && x < obstacle.maxX && y > obstacle.minY && y < obstacle.maxY && z > obstacle.minZ && z < obstacle.maxZ) {
+                    cout << "source: v" << source.getId()+1 << " target: v" << target.getId()+1 << " false"<< endl;
+                    cout << "x: " << x << " y: " << y << " z: " << z << endl;
                     return false;
                 }
             }
         }
+        cout << "source: v" << source.getId()+1 << " target: v" << target.getId()+1 << " true"<< endl;
         return true;
     }
 
     static std::stack<Vertex> run(const Vertex& source, const Vertex& target, const Graph<Block, int>& graph,
                                   const HeuristicInterface& heuristic, const std::vector<Obstacle>& obstacles) {
         std::vector<int> dist(graph.size(), std::numeric_limits<int>::max());
-        std::vector<int> pred(graph.size(), -1);
+        std::vector<int> pred(graph.size(), -100);
         std::unordered_set<int> closedSet;
         dist[source.getId()] = 0;
 
@@ -103,40 +108,57 @@ public:
             open.pop(); //將最小值pop出來
 
             if (currentVertex == target.getId()) {  //如果最小值等於終點，則回傳路徑
+                cout << "distance: " << dist[target.getId()] << endl;
                 return reconstructPath(source, target, pred);
             }
 
             closedSet.insert(currentVertex);    //將最小值放入closedset
 
-            int pp = pred[currentVertex];  //取出前前驅
-            
-
             for (const auto& neighbor : graph.getNeighbors(currentVertex)) {
-
-                if(lineOfSight(source, target, graph, obstacles))
+                if (closedSet.find(neighbor) != closedSet.end()) continue;  //如果鄰居在closedset中，則跳過
+                int pp = pred[currentVertex];  //取出前前驅
+                cout << "currentVertex: v" << currentVertex+1 << " neighbor: v" << neighbor+1 << " pp: v" << pp+1 << endl;
+                if(pp != -100)
                 {
-
-                    int edgeWeight1 = graph.getEdgeWeight(currentVertex, neighbor);   //取出邊的權重
-                    int edgeWeight2 = graph.getEdgeWeight(pp, currentVertex);   //取出邊的權重
-                    int edgeWeightPP = graph.getEdgeWeight(pp, neighbor);   //取出邊的權重
-
-                    if(edgeWeightPP < edgeWeight1 + edgeWeight2)
+                    if(lineOfSight(pp, neighbor, graph, obstacles))
                     {
-                        int alt = dist[pp] + edgeWeightPP; //計算新的距離
-                        if (alt < dist[neighbor]) { //如果新的距離小於原本的距離
-                            dist[neighbor] = alt;   //更新距離
-                            pred[neighbor] = pp; //更新前驅
-                            open.push({dist[neighbor] + heuristic.get(graph, source, target), neighbor});   //將(距離，鄰居)放入openqueue
+                        //cout << "line of sight success" << endl;
+                        double edgeWeight1 = graph.getEdgeWeight(currentVertex, neighbor);   //取出邊的權重
+                        double edgeWeight2 = graph.getEdgeWeight(pp, currentVertex);   //取出邊的權重
+                        double dx = graph.getVertexProperty(neighbor).value.getX() - graph.getVertexProperty(pp).value.getX();
+                        double dy = graph.getVertexProperty(neighbor).value.getY() - graph.getVertexProperty(pp).value.getY();
+                        double dz = graph.getVertexProperty(neighbor).value.getZ() - graph.getVertexProperty(pp).value.getZ();
+                        int edgeWeightPP = sqrt(dx * dx + dy * dy + dz * dz);   //取出邊的權重
+
+                        if(edgeWeightPP < edgeWeight1 + edgeWeight2)
+                        {
+                            int alt = dist[pp] + edgeWeightPP; //計算新的距離
+                            if (alt < dist[neighbor]) { //如果新的距離小於原本的距離
+                                dist[neighbor] = alt;   //更新距離
+                                pred[neighbor] = pp; //更新前驅
+                                open.push({dist[neighbor] + heuristic.get(graph, neighbor, target), neighbor});   //將(距離，鄰居)放入openqueue
+                            }
                         }
-                    }
-                    else
+                        else
+                        {
+                            int alt = dist[currentVertex] + edgeWeight1; //計算新的距離
+                            if (alt < dist[neighbor]) { //如果新的距離小於原本的距離
+                                dist[neighbor] = alt;   //更新距離
+                                pred[neighbor] = currentVertex; //更新前驅
+                                open.push({dist[neighbor] + heuristic.get(graph, neighbor, target), neighbor});   //將(距離，鄰居)放入openqueue
+                            }
+                        }
+                        cout << "distance: " << dist[neighbor] << endl;
+                    }else
                     {
-                        int alt = dist[currentVertex] + edgeWeight1; //計算新的距離
+                        int edgeWeight = graph.getEdgeWeight(currentVertex, neighbor);   //取出邊的權重
+                        int alt = dist[currentVertex] + edgeWeight; //計算新的距離
                         if (alt < dist[neighbor]) { //如果新的距離小於原本的距離
                             dist[neighbor] = alt;   //更新距離
                             pred[neighbor] = currentVertex; //更新前驅
-                            open.push({dist[neighbor] + heuristic.get(graph, source, target), neighbor});   //將(距離，鄰居)放入openqueue
+                            open.push({dist[neighbor] + heuristic.get(graph, neighbor, target), neighbor});   //將(距離，鄰居)放入openqueue
                         }
+                        cout << "distance: " << dist[neighbor] << endl;
                     }
                 }else
                 {
@@ -145,49 +167,74 @@ public:
                     if (alt < dist[neighbor]) { //如果新的距離小於原本的距離
                         dist[neighbor] = alt;   //更新距離
                         pred[neighbor] = currentVertex; //更新前驅
-                        open.push({dist[neighbor] + heuristic.get(graph, source, target), neighbor});   //將(距離，鄰居)放入openqueue
+                        open.push({dist[neighbor] + heuristic.get(graph, neighbor, target), neighbor});   //將(距離，鄰居)放入openqueue
                     }
+                    cout << "distance: " << dist[neighbor] << endl;
                 }
-                if (closedSet.find(neighbor) != closedSet.end()) continue;  //如果鄰居在closedset中，則跳過
-
+                cout << endl;
             }
         }
-
+        cout << endl;
         return std::stack<Vertex>();    //回傳空的stack
     }
 };
 
 int main() {
     // Create graph
-    Graph<Block, int> graph(5);
-    vector<Obstacle> obstacles = {Obstacle(2, 2, 0, 4, 4, 2)};
+    Graph<Block, int> graph(13);
+    vector<Obstacle> obstacles = {Obstacle(1, 2, 0, 2, 3, 1)};
 
     // Create vertices
-    Vertex v1(0), v2(1), v3(2), v4(3), v5(4);
-    graph.setVertexProperty(v1, Block(0, 0, 0));
-    graph.setVertexProperty(v2, Block(5, 5, 1));
-    graph.setVertexProperty(v3, Block(3, 3, 2.5));
-    graph.setVertexProperty(v4, Block(3, 3, 5));
-    graph.setVertexProperty(v5, Block(4, 4, 3));
+    Vertex v1(0), v2(1), v3(2), v4(3), v5(4), v6(5), v7(6), v8(7), v9(8), v10(9), v11(10), v12(11), v13(12);
+    
+    graph.setVertexProperty(v1, Block(0, 0, 0.5));
+    graph.setVertexProperty(v2, Block(1, 1, 0.5));
+    graph.setVertexProperty(v3, Block(2, 1, 0.5)); 
+    graph.setVertexProperty(v4, Block(3, 1, 0.5));
+    graph.setVertexProperty(v5, Block(1, 2, 0.5));
+    graph.setVertexProperty(v6, Block(2, 2, 0.5));
+    graph.setVertexProperty(v7, Block(3, 2, 0.5));
+    graph.setVertexProperty(v8, Block(1, 3, 0.5));
+    graph.setVertexProperty(v9, Block(2, 3, 0.5));
+    graph.setVertexProperty(v10, Block(3, 3, 0.5));
+    graph.setVertexProperty(v11, Block(1, 4, 0.5));
+    graph.setVertexProperty(v12, Block(2, 4, 0.5));
+    graph.setVertexProperty(v13, Block(3, 4, 0.5));
     // Add undirected edges
-    graph.addUndirectedEdge(v1, v3, 4.9244);
-    graph.addUndirectedEdge(v3, v4, 2.5);
-    graph.addUndirectedEdge(v4, v5, 2.4494);
-    graph.addUndirectedEdge(v5, v2, 3.316);
+    graph.addUndirectedEdge(v1, v2, 1.44);
+    graph.addUndirectedEdge(v2, v3, 1);
+    graph.addUndirectedEdge(v3, v4, 1);
+    graph.addUndirectedEdge(v5, v6, 1);
+    graph.addUndirectedEdge(v6, v7, 1);
+    graph.addUndirectedEdge(v8, v9, 1);
+    graph.addUndirectedEdge(v9, v10, 1);
+    graph.addUndirectedEdge(v2, v5, 1);
+    graph.addUndirectedEdge(v3, v6, 1);
+    graph.addUndirectedEdge(v4, v7, 1);
+    graph.addUndirectedEdge(v5, v8, 1);
+    graph.addUndirectedEdge(v6, v9, 1);
+    graph.addUndirectedEdge(v7, v10, 1);
+    graph.addUndirectedEdge(v8, v11, 1);
+    graph.addUndirectedEdge(v9, v12, 1);
+    graph.addUndirectedEdge(v10, v13, 1);
+    graph.addUndirectedEdge(v11, v12, 1);
+    graph.addUndirectedEdge(v12, v13, 1);
 
     // Create heuristic function
     HeuristicA heuristic;
 
     // Create source and target vertices
-    Vertex source = v1;
-    Vertex target = v2;
+    Vertex source = v13;
+    Vertex target = v5;
 
     // Run Theta* algorithm
     std::stack<Vertex> path = ThetaStar::run(source, target, graph, heuristic, obstacles);
 
+    cout << "---------------" << endl;
+    cout << "source: v" << source.getId()+1 << " target: v" << target.getId()+1 << endl;
     // Print path
     while (!path.empty()) {
-        std::cout << path.top().getId() << "->";
+        std::cout << " v" << path.top().getId() + 1 << "->";
         path.pop();
     }
     std::cout << std::endl;

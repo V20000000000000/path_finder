@@ -16,8 +16,9 @@ private:
     double z;
     int weight;
 public:
-    Block(int id, int width, int height) : id(id){}
-    Block(){}
+    Block(int id) : id(id){}
+    Block() : id(-1), x(0), y(0), z(0){}
+    Block(double x, double y, double z) : id(id), x(x), y(y), z(z) {}
     int getId() 
     {
         return id;
