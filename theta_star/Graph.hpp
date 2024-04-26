@@ -73,35 +73,35 @@ public:
     }
 
     // Method to add a bidirected edge
-    void addBidirectedEdge(int source, int target, float weight1, float weight2)
+    void addBidirectedEdge(int source, int target, double weight1, double weight2)
     {
         addDirectedEdge(source, target, weight1);
         addDirectedEdge(target, source, weight2);
     }
 
-    void addBidirectedEdge(const Vertex &source, const Vertex &target, float weight1, float weight2)
+    void addBidirectedEdge(const Vertex &source, const Vertex &target, double weight1, double weight2)
     {
         addBidirectedEdge(source.getId(), target.getId(), weight1, weight2);
     }
 
     // Method to add an undirected edge
-    void addUndirectedEdge(int source, int target, float weight)
+    void addUndirectedEdge(int source, int target, double weight)
     {
         addBidirectedEdge(source, target, weight, weight);
     }
 
-    void addUndirectedEdge(const Vertex &source, const Vertex &target, float weight)
+    void addUndirectedEdge(const Vertex &source, const Vertex &target, double weight)
     {
         addUndirectedEdge(source.getId(), target.getId(), weight);
     }
 
     // Method to add a directed edge
-    void addDirectedEdge(int source, int target, float weight)
+    void addDirectedEdge(int source, int target, double weight)
     {
         adjacencyList[source][target] = weight;
     }
 
-    void addDirectedEdge(const Vertex &source, const Vertex &target, float weight)
+    void addDirectedEdge(const Vertex &source, const Vertex &target, double weight)
     {
         addDirectedEdge(source.getId(), target.getId(), weight);
     }
@@ -123,7 +123,7 @@ public:
     }
 
     // Method to get edge weight
-    float getEdgeWeight(int source, int target) const
+    double getEdgeWeight(int source, int target) const
     {
         auto it = adjacencyList[source].find(target);
         if (it != adjacencyList[source].end())
@@ -133,7 +133,7 @@ public:
         return -1.0f;
     }
 
-    float getEdgeWeight(const Vertex &source, const Vertex &target) const
+    double getEdgeWeight(const Vertex &source, const Vertex &target) const
     {
         return getEdgeWeight(source.getId(), target.getId());
     }
@@ -180,12 +180,12 @@ public:
     }
 
     // Method to set edge weight
-    void setEdgeWeight(int source, int target, float weight)
+    void setEdgeWeight(int source, int target, double weight)
     {
         adjacencyList[source][target] = weight;
     }
 
-    void setEdgeWeight(const Vertex &source, const Vertex &target, float weight)
+    void setEdgeWeight(const Vertex &source, const Vertex &target,double weight)
     {
         setEdgeWeight(source.getId(), target.getId(), weight);
     }

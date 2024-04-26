@@ -32,13 +32,13 @@ struct Obstacle
 // HeuristicInterface represents the interface for heuristic functions
 class HeuristicInterface {
 public:
-    virtual float get(const Graph<Block, int>& graph, const Vertex& source, const Vertex& target) const = 0;
+    virtual double get(const Graph<Block, double>& graph, const Vertex& source, const Vertex& target) const = 0;
 };
 
 // HeuristicA is an example heuristic function
 class HeuristicA : public HeuristicInterface {
 public:
-    float get(const Graph<Block, int>& graph, const Vertex& source, const Vertex& target) const override {
+    double get(const Graph<Block, double>& graph, const Vertex& source, const Vertex& target) const override {
         double dx = graph.getVertexProperty(target).value.getX() - graph.getVertexProperty(source).value.getX();
         double dy = graph.getVertexProperty(target).value.getY() - graph.getVertexProperty(source).value.getY();
         double dz = graph.getVertexProperty(target).value.getZ() - graph.getVertexProperty(source).value.getZ();
@@ -60,7 +60,7 @@ public:
         return path;
     }
 
-    static bool lineOfSight(const Vertex& source, const Vertex& target, const Graph<Block, int>& graph, const std::vector<Obstacle>& obstacles)
+    static bool lineOfSight(const Vertex& source, const Vertex& target, const Graph<Block, double>& graph, const std::vector<Obstacle>& obstacles)
     {
         double x0 = graph.getVertexProperty(source).value.getX();
         double y0 = graph.getVertexProperty(source).value.getY();
@@ -90,17 +90,17 @@ public:
         return true;
     }
 
-    static std::stack<Vertex> run(const Vertex& source, const Vertex& target, const Graph<Block, int>& graph,
+    static std::stack<Vertex> run(const Vertex& source, const Vertex& target, const Graph<Block, double>& graph,
                                   const HeuristicInterface& heuristic, const std::vector<Obstacle>& obstacles) {
-        std::vector<int> dist(graph.size(), std::numeric_limits<int>::max());
-        std::vector<int> pred(graph.size(), -100);
+        std::vector<double> dist(graph.size(), std::numeric_limits<int>::max());
+        std::vector<int> pred(graph.size(), -1);
         std::unordered_set<int> closedSet;
         dist[source.getId()] = 0;
 
-        auto cmp = [](const Pair<float, int>& left, const Pair<float, int>& right) {
+        auto cmp = [](const Pair<double, int>& left, const Pair<double, int>& right) {
             return left.first > right.first;
         };
-        std::priority_queue<Pair<float, int>, std::vector<Pair<float, int>>, decltype(cmp)> open(cmp);
+        std::priority_queue<Pair<double, int>, std::vector<Pair<double, int>>, decltype(cmp)> open(cmp);
         open.push({heuristic.get(graph, source, target), source.getId()});  //將(距離，起點)放入openqueue
 
         while (!open.empty()) {
@@ -118,7 +118,7 @@ public:
                 if (closedSet.find(neighbor) != closedSet.end()) continue;  //如果鄰居在closedset中，則跳過
                 int pp = pred[currentVertex];  //取出前前驅
                 cout << "currentVertex: v" << currentVertex+1 << " neighbor: v" << neighbor+1 << " pp: v" << pp+1 << endl;
-                if(pp != -100)
+                if(pp != -1)
                 {
                     if(lineOfSight(pp, neighbor, graph, obstacles))
                     {
@@ -128,11 +128,11 @@ public:
                         double dx = graph.getVertexProperty(neighbor).value.getX() - graph.getVertexProperty(pp).value.getX();
                         double dy = graph.getVertexProperty(neighbor).value.getY() - graph.getVertexProperty(pp).value.getY();
                         double dz = graph.getVertexProperty(neighbor).value.getZ() - graph.getVertexProperty(pp).value.getZ();
-                        int edgeWeightPP = sqrt(dx * dx + dy * dy + dz * dz);   //取出邊的權重
+                        double edgeWeightPP = sqrt(dx * dx + dy * dy + dz * dz);   //取出邊的權重
 
                         if(edgeWeightPP < edgeWeight1 + edgeWeight2)
                         {
-                            int alt = dist[pp] + edgeWeightPP; //計算新的距離
+                            double alt = dist[pp] + edgeWeightPP; //計算新的距離
                             if (alt < dist[neighbor]) { //如果新的距離小於原本的距離
                                 dist[neighbor] = alt;   //更新距離
                                 pred[neighbor] = pp; //更新前驅
@@ -141,7 +141,7 @@ public:
                         }
                         else
                         {
-                            int alt = dist[currentVertex] + edgeWeight1; //計算新的距離
+                            double alt = dist[currentVertex] + edgeWeight1; //計算新的距離
                             if (alt < dist[neighbor]) { //如果新的距離小於原本的距離
                                 dist[neighbor] = alt;   //更新距離
                                 pred[neighbor] = currentVertex; //更新前驅
@@ -151,8 +151,8 @@ public:
                         cout << "distance: " << dist[neighbor] << endl;
                     }else
                     {
-                        int edgeWeight = graph.getEdgeWeight(currentVertex, neighbor);   //取出邊的權重
-                        int alt = dist[currentVertex] + edgeWeight; //計算新的距離
+                        double edgeWeight = graph.getEdgeWeight(currentVertex, neighbor);   //取出邊的權重
+                        double alt = dist[currentVertex] + edgeWeight; //計算新的距離
                         if (alt < dist[neighbor]) { //如果新的距離小於原本的距離
                             dist[neighbor] = alt;   //更新距離
                             pred[neighbor] = currentVertex; //更新前驅
@@ -162,8 +162,8 @@ public:
                     }
                 }else
                 {
-                    int edgeWeight = graph.getEdgeWeight(currentVertex, neighbor);   //取出邊的權重
-                    int alt = dist[currentVertex] + edgeWeight; //計算新的距離
+                    double edgeWeight = graph.getEdgeWeight(currentVertex, neighbor);   //取出邊的權重
+                    double alt = dist[currentVertex] + edgeWeight; //計算新的距離
                     if (alt < dist[neighbor]) { //如果新的距離小於原本的距離
                         dist[neighbor] = alt;   //更新距離
                         pred[neighbor] = currentVertex; //更新前驅
@@ -181,7 +181,7 @@ public:
 
 int main() {
     // Create graph
-    Graph<Block, int> graph(13);
+    Graph<Block, double> graph(13);
     vector<Obstacle> obstacles = {Obstacle(1, 2, 0, 2, 3, 1)};
 
     // Create vertices
