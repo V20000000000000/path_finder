@@ -11,9 +11,9 @@ class Block
 {
 private:
     int id;
-    int x;
-    int y;
-    int z;
+    double x;
+    double y;
+    double z;
     int weight;
 public:
     Block(int id, int width, int height) : id(id){}
@@ -28,17 +28,17 @@ public:
         return weight;
     }
 
-    int getX() 
+    double getX() 
     {
         return x;
     }
 
-    int getY() 
+    double getY() 
     {
         return y;
     }
 
-    int getZ() 
+    double getZ() 
     {
         return z;
     }
@@ -48,17 +48,17 @@ public:
         this->weight = weight;
     }
 
-    void setX(int x) 
+    void setX(double x) 
     {
         this->x = x;
     }
 
-    void setY(int y) 
+    void setY(double y) 
     {
         this->y = y;
     }
 
-    void setZ(int z) 
+    void setZ(double z) 
     {
         this->z = z;
     }
