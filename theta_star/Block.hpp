@@ -14,7 +14,7 @@ private:
     double x;
     double y;
     double z;
-    int weight;
+    double weight;
 public:
     Block(int id) : id(id){}
     Block() : id(-1), x(0), y(0), z(0){}
@@ -44,7 +44,7 @@ public:
         return z;
     }
 
-    void setWeight(int weight) 
+    void setWeight(double weight) 
     {
         this->weight = weight;
     }
