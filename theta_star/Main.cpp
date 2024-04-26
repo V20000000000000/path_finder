@@ -5,6 +5,7 @@
 #include <queue>
 #include <cmath>
 #include <limits>
+#include <utility>
 
 #include "Graph.hpp"
 #include "Block.hpp"
@@ -45,6 +46,19 @@ public:
         return std::sqrt(dx * dx + dy * dy + dz * dz);
     }
 };
+
+
+
+// 比较函数类
+class Comparator {
+public:
+    // 重载函数调用运算符
+    bool operator()(const std::pair<double, int>& left, const std::pair<double, int>& right) const {
+        // 按照第一个元素进行比较
+        return left.first > right.first;
+    }
+};
+
 
 // AStar represents the A* algorithm implementation
 class ThetaStar {
@@ -92,15 +106,14 @@ public:
 
     static std::stack<Vertex> run(const Vertex& source, const Vertex& target, const Graph<Block, double>& graph,
                                   const HeuristicInterface& heuristic, const std::vector<Obstacle>& obstacles) {
-        std::vector<double> dist(graph.size(), std::numeric_limits<int>::max());
+        std::vector<double> dist(graph.size(), std::numeric_limits<double>::max());
         std::vector<int> pred(graph.size(), -1);
         std::unordered_set<int> closedSet;
         dist[source.getId()] = 0;
 
-        auto cmp = [](const Pair<double, int>& left, const Pair<double, int>& right) {
-            return left.first > right.first;
-        };
-        std::priority_queue<Pair<double, int>, std::vector<Pair<double, int>>, decltype(cmp)> open(cmp);
+        Comparator comparator; // 创建一个 Comparator 类的实例
+        std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, Comparator> open(comparator);
+
         open.push({heuristic.get(graph, source, target), source.getId()});  //將(距離，起點)放入openqueue
 
         while (!open.empty()) {
@@ -124,11 +137,14 @@ public:
                     {
                         //cout << "line of sight success" << endl;
                         double edgeWeight1 = graph.getEdgeWeight(currentVertex, neighbor);   //取出邊的權重
-                        double edgeWeight2 = graph.getEdgeWeight(pp, currentVertex);   //取出邊的權重
+                        double edgeWeight2 = dist[currentVertex] - dist[pp];   //取出邊的權重
                         double dx = graph.getVertexProperty(neighbor).value.getX() - graph.getVertexProperty(pp).value.getX();
                         double dy = graph.getVertexProperty(neighbor).value.getY() - graph.getVertexProperty(pp).value.getY();
                         double dz = graph.getVertexProperty(neighbor).value.getZ() - graph.getVertexProperty(pp).value.getZ();
                         double edgeWeightPP = sqrt(dx * dx + dy * dy + dz * dz);   //取出邊的權重
+
+                        cout << "edgeWeight1: " << edgeWeight1 << " edgeWeight2: " << edgeWeight2 << endl;
+                        cout << "edgeWeightPP: " << edgeWeightPP << endl;
 
                         if(edgeWeightPP < edgeWeight1 + edgeWeight2)
                         {
@@ -138,6 +154,7 @@ public:
                                 pred[neighbor] = pp; //更新前驅
                                 open.push({dist[neighbor] + heuristic.get(graph, neighbor, target), neighbor});   //將(距離，鄰居)放入openqueue
                             }
+                            cout << "PA2 100" << endl;
                         }
                         else
                         {
@@ -147,6 +164,7 @@ public:
                                 pred[neighbor] = currentVertex; //更新前驅
                                 open.push({dist[neighbor] + heuristic.get(graph, neighbor, target), neighbor});   //將(距離，鄰居)放入openqueue
                             }
+                            cout << "PA2 200" << endl;
                         }
                         cout << "distance: " << dist[neighbor] << endl;
                     }else
@@ -159,6 +177,7 @@ public:
                             open.push({dist[neighbor] + heuristic.get(graph, neighbor, target), neighbor});   //將(距離，鄰居)放入openqueue
                         }
                         cout << "distance: " << dist[neighbor] << endl;
+                        cout << "PA2 300" << endl;
                     }
                 }else
                 {
@@ -170,6 +189,7 @@ public:
                         open.push({dist[neighbor] + heuristic.get(graph, neighbor, target), neighbor});   //將(距離，鄰居)放入openqueue
                     }
                     cout << "distance: " << dist[neighbor] << endl;
+                    cout << "PA2 400" << endl;
                 }
                 cout << endl;
             }
@@ -224,8 +244,8 @@ int main() {
     HeuristicA heuristic;
 
     // Create source and target vertices
-    Vertex source = v13;
-    Vertex target = v5;
+    Vertex source = v11;
+    Vertex target = v2;
 
     // Run Theta* algorithm
     std::stack<Vertex> path = ThetaStar::run(source, target, graph, heuristic, obstacles);

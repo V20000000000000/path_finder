@@ -85,7 +85,7 @@ public:
     }
 
     // Method to add an undirected edge
-    void addUndirectedEdge(int source, int target, double weight)
+    void addUndirectedEdge(int source, int target, double weight) 
     {
         addBidirectedEdge(source, target, weight, weight);
     }
