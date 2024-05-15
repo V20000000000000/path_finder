@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Main {
 
-	public static void main(String[] args) {
+	public static void Main(String[] args) {
 		Graph<Integer, Integer> graph = new Graph<>(5);
 
 		Vertex v1 = new Vertex(0);

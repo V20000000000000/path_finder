@@ -6,6 +6,7 @@
 #include <cmath>
 #include <limits>
 #include <utility>
+#include <fstream>
 
 #include "Graph.hpp"
 #include "Block.hpp"
@@ -85,22 +86,22 @@ public:
         double dx = x1 - x0;
         double dy = y1 - y0;
         double dz = z1 - z0;
-        cout << "x0: " << x0 << " y0: " << y0 << " z0: " << z0  << endl << "x1: " << x1 << " y1: " << y1 << " z1: " << z1 << endl;
-        cout << "dx: " << dx << " dy: " << dy << " dz: " << dz << endl;
+        //cout << "x0: " << x0 << " y0: " << y0 << " z0: " << z0  << endl << "x1: " << x1 << " y1: " << y1 << " z1: " << z1 << endl;
+        //cout << "dx: " << dx << " dy: " << dy << " dz: " << dz << endl;
         for (const auto& obstacle : obstacles) {
-            for(double step = 0; step < 1; step += 0.001)
+            for(double step = 0; step <= 1; step += 0.0001)
             {
                 double x = x0 + dx * step;
                 double y = y0 + dy * step;
                 double z = z0 + dz * step;
-                if (x > obstacle.minX && x < obstacle.maxX && y > obstacle.minY && y < obstacle.maxY && z > obstacle.minZ && z < obstacle.maxZ) {
-                    cout << "source: v" << source.getId()+1 << " target: v" << target.getId()+1 << " false"<< endl;
-                    cout << "x: " << x << " y: " << y << " z: " << z << endl;
+                if (x > obstacle.minX-1 && x < obstacle.maxX+1 && y > obstacle.minY-1 && y < obstacle.maxY+1 && z > obstacle.minZ-1 && z < obstacle.maxZ+1) {
+                    //cout << "source: v" << source.getId()+1 << " target: v" << target.getId()+1 << " false"<< endl;
+                    //cout << "x: " << x << " y: " << y << " z: " << z << endl;
                     return false;
                 }
             }
         }
-        cout << "source: v" << source.getId()+1 << " target: v" << target.getId()+1 << " true"<< endl;
+        //cout << "source: v" << source.getId()+1 << " target: v" << target.getId()+1 << " true"<< endl;
         return true;
     }
 
@@ -121,7 +122,7 @@ public:
             open.pop(); //將最小值pop出來
 
             if (currentVertex == target.getId()) {  //如果最小值等於終點，則回傳路徑
-                cout << "distance: " << dist[target.getId()] << endl;
+                //cout << "distance: " << dist[target.getId()] << endl;
                 return reconstructPath(source, target, pred);
             }
 
@@ -130,7 +131,7 @@ public:
             for (const auto& neighbor : graph.getNeighbors(currentVertex)) {
                 if (closedSet.find(neighbor) != closedSet.end()) continue;  //如果鄰居在closedset中，則跳過
                 int pp = pred[currentVertex];  //取出前前驅
-                cout << "currentVertex: v" << currentVertex+1 << " neighbor: v" << neighbor+1 << " pp: v" << pp+1 << endl;
+                //cout << "currentVertex: v" << currentVertex+1 << " neighbor: v" << neighbor+1 << " pp: v" << pp+1 << endl;
                 if(pp != -1)
                 {
                     if(lineOfSight(pp, neighbor, graph, obstacles))
@@ -143,8 +144,8 @@ public:
                         double dz = graph.getVertexProperty(neighbor).value.getZ() - graph.getVertexProperty(pp).value.getZ();
                         double edgeWeightPP = sqrt(dx * dx + dy * dy + dz * dz);   //取出邊的權重
 
-                        cout << "edgeWeight1: " << edgeWeight1 << " edgeWeight2: " << edgeWeight2 << endl;
-                        cout << "edgeWeightPP: " << edgeWeightPP << endl;
+                        //cout << "edgeWeight1: " << edgeWeight1 << " edgeWeight2: " << edgeWeight2 << endl;
+                        //cout << "edgeWeightPP: " << edgeWeightPP << endl;
 
                         if(edgeWeightPP < edgeWeight1 + edgeWeight2)
                         {
@@ -154,7 +155,7 @@ public:
                                 pred[neighbor] = pp; //更新前驅
                                 open.push({dist[neighbor] + heuristic.get(graph, neighbor, target), neighbor});   //將(距離，鄰居)放入openqueue
                             }
-                            cout << "PA2 100" << endl;
+                            //cout << "PA2 100" << endl;
                         }
                         else
                         {
@@ -164,9 +165,9 @@ public:
                                 pred[neighbor] = currentVertex; //更新前驅
                                 open.push({dist[neighbor] + heuristic.get(graph, neighbor, target), neighbor});   //將(距離，鄰居)放入openqueue
                             }
-                            cout << "PA2 200" << endl;
+                            //cout << "PA2 200" << endl;
                         }
-                        cout << "distance: " << dist[neighbor] << endl;
+                        //cout << "distance: " << dist[neighbor] << endl;
                     }else
                     {
                         double edgeWeight = graph.getEdgeWeight(currentVertex, neighbor);   //取出邊的權重
@@ -176,8 +177,8 @@ public:
                             pred[neighbor] = currentVertex; //更新前驅
                             open.push({dist[neighbor] + heuristic.get(graph, neighbor, target), neighbor});   //將(距離，鄰居)放入openqueue
                         }
-                        cout << "distance: " << dist[neighbor] << endl;
-                        cout << "PA2 300" << endl;
+                        //cout << "distance: " << dist[neighbor] << endl;
+                        //cout << "PA2 300" << endl;
                     }
                 }else
                 {
@@ -188,75 +189,166 @@ public:
                         pred[neighbor] = currentVertex; //更新前驅
                         open.push({dist[neighbor] + heuristic.get(graph, neighbor, target), neighbor});   //將(距離，鄰居)放入openqueue
                     }
-                    cout << "distance: " << dist[neighbor] << endl;
-                    cout << "PA2 400" << endl;
+                    //cout << "distance: " << dist[neighbor] << endl;
+                    //cout << "PA2 400" << endl;
                 }
-                cout << endl;
+                //cout << endl;
             }
         }
-        cout << endl;
+        //cout << endl;
         return std::stack<Vertex>();    //回傳空的stack
     }
 };
 
 int main() {
-    // Create graph
-    Graph<Block, double> graph(13);
-    vector<Obstacle> obstacles = {Obstacle(1, 2, 0, 2, 3, 1)};
+    vector<Obstacle> obstacles = {
+    Obstacle(10.87, -9.5, 4.27, 11.6, -9.45, 4.97), Obstacle(10.25, -9.5, 4.97, 10.87, -9.45, 5.62)
+    , Obstacle(10.87, -8.5, 4.97, 11.6, -8.45, 5.62), Obstacle(10.25, -8.5, 4.27, 10.7, -8.45, 4.97)
+    , Obstacle(10.87, -7.40, 4.27, 11.6, -7.35, 4.97), Obstacle(10.25, -7.40, 4.97, 10.87, -7.35, 5.62)};
 
-    // Create vertices
-    Vertex v1(0), v2(1), v3(2), v4(3), v5(4), v6(5), v7(6), v8(7), v9(8), v10(9), v11(10), v12(11), v13(12);
+    //KIZ1: 
+    double minX1 = 10.3, minY1 = -10.2, minZ1 = 4.32, maxX1 = 11.55, maxY1 = -6.0, maxZ1 = 5.57;
+    //KIZ2: 
+    //double minX2 = 9.5, minY2 = -10.5, minZ2 = 4.02, maxX2 = 10.5, maxY2 = -9.6, maxZ2 = 4.8;
+
+    // find vertex number
+    int num = 0;
+
+    for(double x = minX1; x <= maxX1; x += 0.05)
+    {
+        for(double y = minY1; y <= maxY1; y += 0.05)
+        {
+            for(double z = minZ1; z <= maxZ1; z += 0.05)
+            {
+                num++;
+            }
+        }
+    }
+
+    // Create graph
+    Graph<Block, double> graph(num);
+
+    int vertexCount = 0;
+    // set vertices property
+    for(double z = minZ1; z <= maxZ1; z += 0.05)
+    {
+        for(double y = minY1; y <= maxY1; y += 0.05)
+        {
+            for(double x = minX1; x <= maxX1; x += 0.05)
+            {
+                graph.setVertexProperty(Vertex(vertexCount), Block(x, y, z));
+                vertexCount++;
+            }
+        }
+    }
+
+    //Add undirected edges
+    for(int i = 0; i < num; i++)
+    {
+        double x = graph.getVertexProperty(i).value.getX();
+        double y = graph.getVertexProperty(i).value.getY();
+        double z = graph.getVertexProperty(i).value.getZ();
+
+        for (const auto& obstacle : obstacles)
+        {
+            if (x > obstacle.minX-0.1 && x < obstacle.maxX+0.1 && y > obstacle.minY-0.1 && y < obstacle.maxY+0.1 && z > obstacle.minZ-0.1 && z < obstacle.maxZ+0.1) {
+                continue;
+            }else{
+                if(z + 0.05 <= maxZ1)
+                {
+                    graph.addDirectedEdge(Vertex(i), Vertex(i + ((maxX1 - minX1) / 0.05 + 1) * ((maxY1 - minY1) / 0.05 + 1)),  0.05);
+                }
+                if(y + 0.05 <= maxY1)
+                {
+                    graph.addDirectedEdge(Vertex(i), Vertex(i + ((maxX1 - minX1) / 0.05 + 1)),  0.05);
+                }
+                if(x + 0.05 <= maxX1)
+                {
+                    graph.addDirectedEdge(Vertex(i), Vertex(i + 1),  0.05);
+                }
+                if(z - 0.05 >= minZ1)
+                {
+                    graph.addDirectedEdge(Vertex(i), Vertex(i - ((maxX1 - minX1) / 0.05 + 1) * ((maxY1 - minY1) / 0.05 + 1)),  0.05);
+                }
+                if(y - 0.05 >= minY1)
+                {
+                    graph.addDirectedEdge(Vertex(i), Vertex(i - ((maxX1 - minX1) / 0.05 + 1)),  0.05);
+                }
+                if(x - 0.05 >= minX1)
+                {
+                    graph.addDirectedEdge(Vertex(i), Vertex(i - 1),  0.05);
+                }
+            }
+        }
+    }
     
-    graph.setVertexProperty(v1, Block(0, 0, 0.5));
-    graph.setVertexProperty(v2, Block(1, 1, 0.5));
-    graph.setVertexProperty(v3, Block(2, 1, 0.5)); 
-    graph.setVertexProperty(v4, Block(3, 1, 0.5));
-    graph.setVertexProperty(v5, Block(1, 2, 0.5));
-    graph.setVertexProperty(v6, Block(2, 2, 0.5));
-    graph.setVertexProperty(v7, Block(3, 2, 0.5));
-    graph.setVertexProperty(v8, Block(1, 3, 0.5));
-    graph.setVertexProperty(v9, Block(2, 3, 0.5));
-    graph.setVertexProperty(v10, Block(3, 3, 0.5));
-    graph.setVertexProperty(v11, Block(1, 4, 0.5));
-    graph.setVertexProperty(v12, Block(2, 4, 0.5));
-    graph.setVertexProperty(v13, Block(3, 4, 0.5));
-    // Add undirected edges
-    graph.addUndirectedEdge(v1, v2, 1.44);
-    graph.addUndirectedEdge(v2, v3, 1);
-    graph.addUndirectedEdge(v3, v4, 1);
-    graph.addUndirectedEdge(v5, v6, 1);
-    graph.addUndirectedEdge(v6, v7, 1);
-    graph.addUndirectedEdge(v8, v9, 1);
-    graph.addUndirectedEdge(v9, v10, 1);
-    graph.addUndirectedEdge(v2, v5, 1);
-    graph.addUndirectedEdge(v3, v6, 1);
-    graph.addUndirectedEdge(v4, v7, 1);
-    graph.addUndirectedEdge(v5, v8, 1);
-    graph.addUndirectedEdge(v6, v9, 1);
-    graph.addUndirectedEdge(v7, v10, 1);
-    graph.addUndirectedEdge(v8, v11, 1);
-    graph.addUndirectedEdge(v9, v12, 1);
-    graph.addUndirectedEdge(v10, v13, 1);
-    graph.addUndirectedEdge(v11, v12, 1);
-    graph.addUndirectedEdge(v12, v13, 1);
 
     // Create heuristic function
     HeuristicA heuristic;
 
     // Create source and target vertices
-    Vertex source = v11;
-    Vertex target = v7;
+    ifstream inputfile("input.txt");
+
+    if(!inputfile)
+    {
+        cout << "File not found" << endl;
+        return 0;
+    }
+
+    int s, t;
+    inputfile >> s >> t;
+    cout << s << " " << t << endl;
+
+    // Print vertex property
+    cout << "source: " << graph.getVertexProperty(s).value.getX() << " " << graph.getVertexProperty(s).value.getY() << " " << graph.getVertexProperty(s).value.getZ() << endl; 
+    cout << "target: " << graph.getVertexProperty(t).value.getX() << " " << graph.getVertexProperty(t).value.getY() << " " << graph.getVertexProperty(t).value.getZ() << endl;
+
+    Vertex source = s;
+    Vertex target = t;
+
+    //is source and target in obstacle
+    for (const auto& obstacle : obstacles) {
+        if (graph.getVertexProperty(source).value.getX() > obstacle.minX && graph.getVertexProperty(source).value.getX() < obstacle.maxX && graph.getVertexProperty(source).value.getY() > obstacle.minY && graph.getVertexProperty(source).value.getY() < obstacle.maxY && graph.getVertexProperty(source).value.getZ() > obstacle.minZ && graph.getVertexProperty(source).value.getZ() < obstacle.maxZ) {
+            cout << "source in obstacle" << endl;
+            return 0;
+        }
+        if (graph.getVertexProperty(target).value.getX() > obstacle.minX && graph.getVertexProperty(target).value.getX() < obstacle.maxX && graph.getVertexProperty(target).value.getY() > obstacle.minY && graph.getVertexProperty(target).value.getY() < obstacle.maxY && graph.getVertexProperty(target).value.getZ() > obstacle.minZ && graph.getVertexProperty(target).value.getZ() < obstacle.maxZ) {
+            cout << "target in obstacle" << endl;
+            return 0;
+        }
+    }
+
+    cout << num << endl;
 
     // Run Theta* algorithm
     std::stack<Vertex> path = ThetaStar::run(source, target, graph, heuristic, obstacles);
 
+    ofstream outputfile("Paths.csv");
+
+    outputfile << "xmin" << "," << "ymin" << "," << "zmin" << "," << "xmax" << "," << "ymax" << "," << "zmax" << endl;
+
+    vector<vector<double>> passingVertex;
+
     cout << "---------------" << endl;
-    cout << "source: v" << source.getId()+1 << " target: v" << target.getId()+1 << endl;
+    cout << "source: v" << source.getId() << " target: v" << target.getId() << endl;
     // Print path
     while (!path.empty()) {
-        std::cout << " v" << path.top().getId() + 1 << "->";
+        std::cout << " v" << path.top().getId()
+        << "(x = " << graph.getVertexProperty(path.top().getId()).value.getX()
+        << ", y = " << graph.getVertexProperty(path.top().getId()).value.getY()
+        << ", z = " << graph.getVertexProperty(path.top().getId()).value.getZ() << ")"
+        << "->" << endl;
+        passingVertex.push_back({graph.getVertexProperty(path.top().getId()).value.getX(), graph.getVertexProperty(path.top().getId()).value.getY(), graph.getVertexProperty(path.top().getId()).value.getZ()});
         path.pop();
     }
+
+    for(unsigned int i = 0; i < passingVertex.size() - 1; i++)
+    {
+        outputfile << passingVertex[i][0] << "," << passingVertex[i][1] << "," << passingVertex[i][2] << "," << passingVertex[i+1][0] << "," << passingVertex[i+1][1] << "," << passingVertex[i+1][2] << endl;
+    }
+
+    outputfile.close();
+    inputfile.close();
     std::cout << std::endl;
 
     return 0;
