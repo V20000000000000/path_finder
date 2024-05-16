@@ -7,6 +7,7 @@
 #include <limits>
 #include <utility>
 #include <fstream>
+#include <map>
 
 #include "Graph.hpp"
 #include "Block.hpp"
@@ -227,6 +228,7 @@ int main() {
 
     // Create graph
     Graph<Block, double> graph(num);
+    map<vector<double>, int> vertexLocation;
 
     int vertexCount = 0;
     // set vertices property
@@ -237,6 +239,7 @@ int main() {
             for(double x = minX1; x <= maxX1; x += 0.05)
             {
                 graph.setVertexProperty(Vertex(vertexCount), Block(x, y, z));
+                vertexLocation[{x, y, z}] = vertexCount;
                 vertexCount++;
             }
         }
@@ -251,37 +254,27 @@ int main() {
 
         for (const auto& obstacle : obstacles)
         {
-            if (x > obstacle.minX-0.1 && x < obstacle.maxX+0.1 && y > obstacle.minY-0.1 && y < obstacle.maxY+0.1 && z > obstacle.minZ-0.1 && z < obstacle.maxZ+0.1) {
+            if (x > obstacle.minX-0.2 && x < obstacle.maxX+0.2 && y > obstacle.minY-0.2 && y < obstacle.maxY+0.2 && z > obstacle.minZ-0.2 && z < obstacle.maxZ+0.2) {
                 continue;
-            }else{
-                if(z + 0.05 <= maxZ1)
+            }
+            else
+            {
+                if (vertexLocation.find({x, y, z}) == vertexLocation.end()) 
                 {
-                    graph.addDirectedEdge(Vertex(i), Vertex(i + ((maxX1 - minX1) / 0.05 + 1) * ((maxY1 - minY1) / 0.05 + 1)),  0.05);
+                    continue;
                 }
-                if(y + 0.05 <= maxY1)
+                else
                 {
-                    graph.addDirectedEdge(Vertex(i), Vertex(i + ((maxX1 - minX1) / 0.05 + 1)),  0.05);
-                }
-                if(x + 0.05 <= maxX1)
-                {
-                    graph.addDirectedEdge(Vertex(i), Vertex(i + 1),  0.05);
-                }
-                if(z - 0.05 >= minZ1)
-                {
-                    graph.addDirectedEdge(Vertex(i), Vertex(i - ((maxX1 - minX1) / 0.05 + 1) * ((maxY1 - minY1) / 0.05 + 1)),  0.05);
-                }
-                if(y - 0.05 >= minY1)
-                {
-                    graph.addDirectedEdge(Vertex(i), Vertex(i - ((maxX1 - minX1) / 0.05 + 1)),  0.05);
-                }
-                if(x - 0.05 >= minX1)
-                {
-                    graph.addDirectedEdge(Vertex(i), Vertex(i - 1),  0.05);
+                    graph.addDirectedEdge(i, vertexLocation[{x+0.05, y, z}], 0.05);
+                    graph.addDirectedEdge(i, vertexLocation[{x, y+0.05, z}], 0.05);
+                    graph.addDirectedEdge(i, vertexLocation[{x, y, z+0.05}], 0.05);
+                    graph.addDirectedEdge(i, vertexLocation[{x-0.05, y, z}], 0.05);
+                    graph.addDirectedEdge(i, vertexLocation[{x, y-0.05, z}], 0.05);
+                    graph.addDirectedEdge(i, vertexLocation[{x, y, z-0.05}], 0.05);
                 }
             }
         }
     }
-    
 
     // Create heuristic function
     HeuristicA heuristic;
@@ -295,9 +288,36 @@ int main() {
         return 0;
     }
 
-    int s, t;
-    inputfile >> s >> t;
-    cout << s << " " << t << endl;
+    double sx, sy, sz, tx, ty, tz;
+    inputfile >> sx >> sy >> sz >> tx >> ty >> tz;
+    cout << "sx: " << sx << " sy: " << sy << " sz: " << sz << endl;
+    cout << "tx: " << tx << " ty: " << ty << " tz: " << tz << endl;
+    //find nearest source and nearest target vertex
+
+    double minDistance1 = 1000000;
+    double minDistance2 = 1000000;
+    int s = 0, t = 0;
+
+    for(int i = 0; i < num; i++)
+    {
+        double x = graph.getVertexProperty(i).value.getX();
+        double y = graph.getVertexProperty(i).value.getY();
+        double z = graph.getVertexProperty(i).value.getZ();
+
+        double distance = sqrt((sx - x) * (sx - x) + (sy - y) * (sy - y) + (sz - z) * (sz - z));
+        if(distance < minDistance1)
+        {
+            minDistance1 = distance;
+            s = i;
+        }
+
+        distance = sqrt((tx - x) * (tx - x) + (ty - y) * (ty - y) + (tz - z) * (tz - z));
+        if(distance < minDistance2)
+        {
+            minDistance2 = distance;
+            t = i;
+        }
+    }
 
     // Print vertex property
     cout << "source: " << graph.getVertexProperty(s).value.getX() << " " << graph.getVertexProperty(s).value.getY() << " " << graph.getVertexProperty(s).value.getZ() << endl; 
