@@ -141,7 +141,7 @@ public:
                     {
                         //cout << "line of sight success" << endl;
                         double edgeWeight1 = graph.getEdgeWeight(currentVertex, neighbor);   //取出邊的權重
-                        double edgeWeight2 = graph.getEdgeWeight(pp, currentVertex);   //取出邊的權重
+                        double edgeWeight2 = dist[currentVertex] - dist[pp];   //取出邊的權重
                         double dx = graph.getVertexProperty(neighbor).value.getX() - graph.getVertexProperty(pp).value.getX();
                         double dy = graph.getVertexProperty(neighbor).value.getY() - graph.getVertexProperty(pp).value.getY();
                         double dz = graph.getVertexProperty(neighbor).value.getZ() - graph.getVertexProperty(pp).value.getZ();
