@@ -96,7 +96,7 @@ public:
                 double x = x0 + dx * step;
                 double y = y0 + dy * step;
                 double z = z0 + dz * step;
-                if (x > obstacle.minX-1 && x < obstacle.maxX+1 && y > obstacle.minY-1 && y < obstacle.maxY+1 && z > obstacle.minZ-1 && z < obstacle.maxZ+1) {
+                if (x > obstacle.minX - 0.2 && x < obstacle.maxX + 0.2 && y > obstacle.minY-0.2 && y < obstacle.maxY + 0.2 && z > obstacle.minZ-0.2 && z < obstacle.maxZ + 0.2) {
                     //cout << "source: v" << source.getId()+1 << " target: v" << target.getId()+1 << " false"<< endl;
                     //cout << "x: " << x << " y: " << y << " z: " << z << endl;
                     return false;
@@ -105,6 +105,7 @@ public:
         }
         //cout << "source: v" << source.getId()+1 << " target: v" << target.getId()+1 << " true"<< endl;
         return true;
+        // return false;
     }
 
     static std::stack<Vertex> run(const Vertex& source, const Vertex& target, const Graph<Block, double>& graph,
@@ -140,7 +141,7 @@ public:
                     {
                         //cout << "line of sight success" << endl;
                         double edgeWeight1 = graph.getEdgeWeight(currentVertex, neighbor);   //取出邊的權重
-                        double edgeWeight2 = dist[currentVertex] - dist[pp];   //取出邊的權重
+                        double edgeWeight2 = graph.getEdgeWeight(pp, currentVertex);   //取出邊的權重
                         double dx = graph.getVertexProperty(neighbor).value.getX() - graph.getVertexProperty(pp).value.getX();
                         double dy = graph.getVertexProperty(neighbor).value.getY() - graph.getVertexProperty(pp).value.getY();
                         double dz = graph.getVertexProperty(neighbor).value.getZ() - graph.getVertexProperty(pp).value.getZ();
@@ -157,7 +158,6 @@ public:
                                 pred[neighbor] = pp; //更新前驅
                                 open.push({dist[neighbor] + heuristic.get(graph, neighbor, target), neighbor});   //將(距離，鄰居)放入openqueue
                             }
-                            //cout << "PA2 100" << endl;
                         }
                         else
                         {
