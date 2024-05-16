@@ -8,6 +8,7 @@
 #include <utility>
 #include <fstream>
 #include <map>
+#include <sstream>
 
 #include "Graph.hpp"
 #include "Block.hpp"
@@ -208,7 +209,7 @@ int main() {
     , Obstacle(10.87, -7.40, 4.27, 11.6, -7.35, 4.97), Obstacle(10.25, -7.40, 4.97, 10.87, -7.35, 5.62)};
 
     //KIZ1: 
-    double minX1 = 10.3, minY1 = -10.2, minZ1 = 4.32, maxX1 = 11.55, maxY1 = -6.0, maxZ1 = 5.57;
+    double minX1 = 10.3 + 0.2, minY1 = -10.2 + 0.2, minZ1 = 4.32 + 0.2, maxX1 = 11.55 - 0.2, maxY1 = -6.0 - 0.2, maxZ1 = 5.57 - 0.2;
     //KIZ2: 
     //double minX2 = 9.5, minY2 = -10.5, minZ2 = 4.02, maxX2 = 10.5, maxY2 = -9.6, maxZ2 = 4.8;
 
@@ -252,26 +253,34 @@ int main() {
         double y = graph.getVertexProperty(i).value.getY();
         double z = graph.getVertexProperty(i).value.getZ();
 
+        bool inObstacleFlag = false;
+
         for (const auto& obstacle : obstacles)
         {
             if (x > obstacle.minX-0.2 && x < obstacle.maxX+0.2 && y > obstacle.minY-0.2 && y < obstacle.maxY+0.2 && z > obstacle.minZ-0.2 && z < obstacle.maxZ+0.2) {
+                inObstacleFlag = true;
+                break;
+            }
+        }
+
+        if(inObstacleFlag == true)
+        {
+            continue;
+        }
+        else
+        {
+            if (vertexLocation.find({x, y, z}) == vertexLocation.end()) 
+            {
                 continue;
             }
             else
             {
-                if (vertexLocation.find({x, y, z}) == vertexLocation.end()) 
-                {
-                    continue;
-                }
-                else
-                {
-                    graph.addDirectedEdge(i, vertexLocation[{x+0.05, y, z}], 0.05);
-                    graph.addDirectedEdge(i, vertexLocation[{x, y+0.05, z}], 0.05);
-                    graph.addDirectedEdge(i, vertexLocation[{x, y, z+0.05}], 0.05);
-                    graph.addDirectedEdge(i, vertexLocation[{x-0.05, y, z}], 0.05);
-                    graph.addDirectedEdge(i, vertexLocation[{x, y-0.05, z}], 0.05);
-                    graph.addDirectedEdge(i, vertexLocation[{x, y, z-0.05}], 0.05);
-                }
+                graph.addDirectedEdge(i, vertexLocation[{x+0.05, y, z}], 0.05);
+                graph.addDirectedEdge(i, vertexLocation[{x, y+0.05, z}], 0.05);
+                graph.addDirectedEdge(i, vertexLocation[{x, y, z+0.05}], 0.05);
+                graph.addDirectedEdge(i, vertexLocation[{x-0.05, y, z}], 0.05);
+                graph.addDirectedEdge(i, vertexLocation[{x, y-0.05, z}], 0.05);
+                graph.addDirectedEdge(i, vertexLocation[{x, y, z-0.05}], 0.05);
             }
         }
     }
@@ -288,83 +297,109 @@ int main() {
         return 0;
     }
 
-    double sx, sy, sz, tx, ty, tz;
-    inputfile >> sx >> sy >> sz >> tx >> ty >> tz;
-    cout << "sx: " << sx << " sy: " << sy << " sz: " << sz << endl;
-    cout << "tx: " << tx << " ty: " << ty << " tz: " << tz << endl;
-    //find nearest source and nearest target vertex
-
-    double minDistance1 = 1000000;
-    double minDistance2 = 1000000;
-    int s = 0, t = 0;
-
-    for(int i = 0; i < num; i++)
-    {
-        double x = graph.getVertexProperty(i).value.getX();
-        double y = graph.getVertexProperty(i).value.getY();
-        double z = graph.getVertexProperty(i).value.getZ();
-
-        double distance = sqrt((sx - x) * (sx - x) + (sy - y) * (sy - y) + (sz - z) * (sz - z));
-        if(distance < minDistance1)
-        {
-            minDistance1 = distance;
-            s = i;
-        }
-
-        distance = sqrt((tx - x) * (tx - x) + (ty - y) * (ty - y) + (tz - z) * (tz - z));
-        if(distance < minDistance2)
-        {
-            minDistance2 = distance;
-            t = i;
-        }
-    }
-
-    // Print vertex property
-    cout << "source: " << graph.getVertexProperty(s).value.getX() << " " << graph.getVertexProperty(s).value.getY() << " " << graph.getVertexProperty(s).value.getZ() << endl; 
-    cout << "target: " << graph.getVertexProperty(t).value.getX() << " " << graph.getVertexProperty(t).value.getY() << " " << graph.getVertexProperty(t).value.getZ() << endl;
-
-    Vertex source = s;
-    Vertex target = t;
-
-    //is source and target in obstacle
-    for (const auto& obstacle : obstacles) {
-        if (graph.getVertexProperty(source).value.getX() > obstacle.minX && graph.getVertexProperty(source).value.getX() < obstacle.maxX && graph.getVertexProperty(source).value.getY() > obstacle.minY && graph.getVertexProperty(source).value.getY() < obstacle.maxY && graph.getVertexProperty(source).value.getZ() > obstacle.minZ && graph.getVertexProperty(source).value.getZ() < obstacle.maxZ) {
-            cout << "source in obstacle" << endl;
-            return 0;
-        }
-        if (graph.getVertexProperty(target).value.getX() > obstacle.minX && graph.getVertexProperty(target).value.getX() < obstacle.maxX && graph.getVertexProperty(target).value.getY() > obstacle.minY && graph.getVertexProperty(target).value.getY() < obstacle.maxY && graph.getVertexProperty(target).value.getZ() > obstacle.minZ && graph.getVertexProperty(target).value.getZ() < obstacle.maxZ) {
-            cout << "target in obstacle" << endl;
-            return 0;
-        }
-    }
-
-    cout << num << endl;
-
-    // Run Theta* algorithm
-    std::stack<Vertex> path = ThetaStar::run(source, target, graph, heuristic, obstacles);
-
     ofstream outputfile("Paths.csv");
 
     outputfile << "xmin" << "," << "ymin" << "," << "zmin" << "," << "xmax" << "," << "ymax" << "," << "zmax" << endl;
 
-    vector<vector<double>> passingVertex;
+    double sx, sy, sz, tx, ty, tz;
+    //input dataParse
+    vector<vector<double>> locationData;
 
-    cout << "---------------" << endl;
-    cout << "source: v" << source.getId() << " target: v" << target.getId() << endl;
-    // Print path
-    while (!path.empty()) {
-        std::cout << " v" << path.top().getId()
-        << "(x = " << graph.getVertexProperty(path.top().getId()).value.getX()
-        << ", y = " << graph.getVertexProperty(path.top().getId()).value.getY()
-        << ", z = " << graph.getVertexProperty(path.top().getId()).value.getZ() << ")"
-        << "->" << endl;
-        passingVertex.push_back({graph.getVertexProperty(path.top().getId()).value.getX(), graph.getVertexProperty(path.top().getId()).value.getY(), graph.getVertexProperty(path.top().getId()).value.getZ()});
-        path.pop();
-    }
-
-    for(unsigned int i = 0; i < passingVertex.size() - 1; i++)
+    std::string line;
+    while (std::getline(inputfile, line))
     {
-        outputfile << passingVertex[i][0] << "," << passingVertex[i][1] << "," << passingVertex[i][2] << "," << passingVertex[i+1][0] << "," << passingVertex[i+1][1] << "," << passingVertex[i+1][2] << endl;
+        std::istringstream iss(line);
+        double x, y, z;
+        if (iss >> x >> y >> z)
+        {
+            locationData.push_back({x, y, z});
+        }
+        else
+        {
+            cout << "input format error" << endl;
+        }
+    }
+    
+    for(unsigned int k = 0; k < locationData.size() - 1; k++)
+    {
+        
+        sx = locationData[k][0];
+        sy = locationData[k][1];
+        sz = locationData[k][2];
+    
+        tx = locationData[k+1][0];
+        ty = locationData[k+1][1];
+        tz = locationData[k+1][2];
+
+        //find nearest source and nearest target vertex
+        double minDistance1 = 1000000;
+        double minDistance2 = 1000000;
+        int s = 0, t = 0;
+
+        for(int i = 0; i < num; i++)
+        {
+            double x = graph.getVertexProperty(i).value.getX();
+            double y = graph.getVertexProperty(i).value.getY();
+            double z = graph.getVertexProperty(i).value.getZ();
+
+            double distance = sqrt((sx - x) * (sx - x) + (sy - y) * (sy - y) + (sz - z) * (sz - z));
+            if(distance < minDistance1)
+            {
+                minDistance1 = distance;
+                s = i;
+            }
+
+            distance = sqrt((tx - x) * (tx - x) + (ty - y) * (ty - y) + (tz - z) * (tz - z));
+            if(distance < minDistance2)
+            {
+                minDistance2 = distance;
+                t = i;
+            }
+        }
+
+        // Print vertex property
+        cout << "source: " << graph.getVertexProperty(s).value.getX() << " " << graph.getVertexProperty(s).value.getY() << " " << graph.getVertexProperty(s).value.getZ() << endl; 
+        cout << "target: " << graph.getVertexProperty(t).value.getX() << " " << graph.getVertexProperty(t).value.getY() << " " << graph.getVertexProperty(t).value.getZ() << endl;
+
+        Vertex source = s;
+        Vertex target = t;
+
+        //is source and target in obstacle
+        for (const auto& obstacle : obstacles) {
+            if (graph.getVertexProperty(source).value.getX() > obstacle.minX && graph.getVertexProperty(source).value.getX() < obstacle.maxX && graph.getVertexProperty(source).value.getY() > obstacle.minY && graph.getVertexProperty(source).value.getY() < obstacle.maxY && graph.getVertexProperty(source).value.getZ() > obstacle.minZ && graph.getVertexProperty(source).value.getZ() < obstacle.maxZ) {
+                cout << "source in obstacle" << endl;
+                return 0;
+            }
+            if (graph.getVertexProperty(target).value.getX() > obstacle.minX && graph.getVertexProperty(target).value.getX() < obstacle.maxX && graph.getVertexProperty(target).value.getY() > obstacle.minY && graph.getVertexProperty(target).value.getY() < obstacle.maxY && graph.getVertexProperty(target).value.getZ() > obstacle.minZ && graph.getVertexProperty(target).value.getZ() < obstacle.maxZ) {
+                cout << "target in obstacle" << endl;
+                return 0;
+            }
+        }
+
+        cout << num << endl;
+        
+        // Run Theta* algorithm
+        std::stack<Vertex> path = ThetaStar::run(source, target, graph, heuristic, obstacles);
+
+        vector<vector<double>> passingVertex = {};
+
+        cout << "---------------" << endl;
+        cout << "source: v" << source.getId() << " target: v" << target.getId() << endl;
+        // Print path
+        while (!path.empty()) {
+            std::cout << " v" << path.top().getId()
+            << "(x = " << graph.getVertexProperty(path.top().getId()).value.getX()
+            << ", y = " << graph.getVertexProperty(path.top().getId()).value.getY()
+            << ", z = " << graph.getVertexProperty(path.top().getId()).value.getZ() << ")"
+            << "->" << endl;
+            passingVertex.push_back({graph.getVertexProperty(path.top().getId()).value.getX(), graph.getVertexProperty(path.top().getId()).value.getY(), graph.getVertexProperty(path.top().getId()).value.getZ()});
+            path.pop();
+        }
+
+        for(unsigned int i = 0; i < passingVertex.size() - 1; i++)
+        {
+            outputfile << passingVertex[i][0] << "," << passingVertex[i][1] << "," << passingVertex[i][2] << "," << passingVertex[i+1][0] << "," << passingVertex[i+1][1] << "," << passingVertex[i+1][2] << endl;
+        }
     }
 
     outputfile.close();
