@@ -62,6 +62,8 @@ public:
     }
 };
 
+static double totalLength = 0;
+static int turningCount = 0;
 
 // AStar represents the A* algorithm implementation
 class ThetaStar {
@@ -105,7 +107,7 @@ public:
         }
         //cout << "source: v" << source.getId()+1 << " target: v" << target.getId()+1 << " true"<< endl;
         return true;
-        // return false;
+        //return false;
     }
 
     static std::stack<Vertex> run(const Vertex& source, const Vertex& target, const Graph<Block, double>& graph,
@@ -126,6 +128,7 @@ public:
 
             if (currentVertex == target.getId()) {  //如果最小值等於終點，則回傳路徑
                 //cout << "distance: " << dist[target.getId()] << endl;
+                totalLength += dist[target.getId()];
                 return reconstructPath(source, target, pred);
             }
 
@@ -167,9 +170,7 @@ public:
                                 pred[neighbor] = currentVertex; //更新前驅
                                 open.push({dist[neighbor] + heuristic.get(graph, neighbor, target), neighbor});   //將(距離，鄰居)放入openqueue
                             }
-                            //cout << "PA2 200" << endl;
                         }
-                        //cout << "distance: " << dist[neighbor] << endl;
                     }else
                     {
                         double edgeWeight = graph.getEdgeWeight(currentVertex, neighbor);   //取出邊的權重
@@ -179,8 +180,6 @@ public:
                             pred[neighbor] = currentVertex; //更新前驅
                             open.push({dist[neighbor] + heuristic.get(graph, neighbor, target), neighbor});   //將(距離，鄰居)放入openqueue
                         }
-                        //cout << "distance: " << dist[neighbor] << endl;
-                        //cout << "PA2 300" << endl;
                     }
                 }else
                 {
@@ -191,12 +190,11 @@ public:
                         pred[neighbor] = currentVertex; //更新前驅
                         open.push({dist[neighbor] + heuristic.get(graph, neighbor, target), neighbor});   //將(距離，鄰居)放入openqueue
                     }
-                    //cout << "distance: " << dist[neighbor] << endl;
-                    //cout << "PA2 400" << endl;
                 }
                 //cout << endl;
             }
         }
+        
         //cout << endl;
         return std::stack<Vertex>();    //回傳空的stack
     }
@@ -358,8 +356,8 @@ int main() {
         }
 
         // Print vertex property
-        cout << "source: " << graph.getVertexProperty(s).value.getX() << " " << graph.getVertexProperty(s).value.getY() << " " << graph.getVertexProperty(s).value.getZ() << endl; 
-        cout << "target: " << graph.getVertexProperty(t).value.getX() << " " << graph.getVertexProperty(t).value.getY() << " " << graph.getVertexProperty(t).value.getZ() << endl;
+        //cout << "source: " << graph.getVertexProperty(s).value.getX() << " " << graph.getVertexProperty(s).value.getY() << " " << graph.getVertexProperty(s).value.getZ() << endl; 
+        //cout << "target: " << graph.getVertexProperty(t).value.getX() << " " << graph.getVertexProperty(t).value.getY() << " " << graph.getVertexProperty(t).value.getZ() << endl;
 
         Vertex source = s;
         Vertex target = t;
@@ -376,7 +374,7 @@ int main() {
             }
         }
 
-        cout << num << endl;
+        //cout << num << endl;
         
         // Run Theta* algorithm
         std::stack<Vertex> path = ThetaStar::run(source, target, graph, heuristic, obstacles);
@@ -393,6 +391,7 @@ int main() {
             << ", z = " << graph.getVertexProperty(path.top().getId()).value.getZ() << ")"
             << "->" << endl;
             passingVertex.push_back({graph.getVertexProperty(path.top().getId()).value.getX(), graph.getVertexProperty(path.top().getId()).value.getY(), graph.getVertexProperty(path.top().getId()).value.getZ()});
+            turningCount++;
             path.pop();
         }
 
@@ -400,8 +399,12 @@ int main() {
         {
             outputfile << passingVertex[i][0] << "," << passingVertex[i][1] << "," << passingVertex[i][2] << "," << passingVertex[i+1][0] << "," << passingVertex[i+1][1] << "," << passingVertex[i+1][2] << endl;
         }
+        turningCount--;
     }
 
+    turningCount--;
+    cout << "Distance: " << totalLength << endl;
+    cout << "turningCount: " << turningCount << endl;
     outputfile.close();
     inputfile.close();
     std::cout << std::endl;
