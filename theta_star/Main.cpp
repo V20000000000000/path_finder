@@ -225,6 +225,8 @@ int main() {
         }
     }
 
+    cout << "vertex number: " << num << endl;
+
     // Create graph
     Graph<Block, double> graph(num);
     map<vector<double>, int> vertexLocation;
@@ -243,6 +245,8 @@ int main() {
             }
         }
     }
+
+    cout << "vertex number: " << vertexCount << endl;
 
     //Add undirected edges
     for(int i = 0; i < num; i++)
