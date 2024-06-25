@@ -13,8 +13,6 @@
 #include "Graph.hpp"
 #include "Block.hpp"
 
-using namespace std;
-
 // Pair represents a pair of values
 template<typename T, typename U>
 struct Pair {
@@ -92,6 +90,8 @@ public:
         double dx = x1 - x0;
         double dy = y1 - y0;
         double dz = z1 - z0;
+        //cout << "x0: " << x0 << " y0: " << y0 << " z0: " << z0  << endl << "x1: " << x1 << " y1: " << y1 << " z1: " << z1 << endl;
+        //cout << "dx: " << dx << " dy: " << dy << " dz: " << dz << endl;
         for (const auto& obstacle : obstacles) {
             for(double step = 0; step <= 1; step += 0.0001)
             {
@@ -99,10 +99,13 @@ public:
                 double y = y0 + dy * step;
                 double z = z0 + dz * step;
                 if (x > obstacle.minX - 0.2 && x < obstacle.maxX + 0.2 && y > obstacle.minY-0.2 && y < obstacle.maxY + 0.2 && z > obstacle.minZ-0.2 && z < obstacle.maxZ + 0.2) {
+                    //cout << "source: v" << source.getId()+1 << " target: v" << target.getId()+1 << " false"<< endl;
+                    //cout << "x: " << x << " y: " << y << " z: " << z << endl;
                     return false;
                 }
             }
         }
+        //cout << "source: v" << source.getId()+1 << " target: v" << target.getId()+1 << " true"<< endl;
         return true;
         //return false;
     }
@@ -125,6 +128,7 @@ public:
 
             if (currentVertex == target.getId()) {  //如果最小值等於終點，則回傳路徑
                 //cout << "distance: " << dist[target.getId()] << endl;
+                totalLength += dist[target.getId()];
                 return reconstructPath(source, target, pred);
             }
 
@@ -133,13 +137,12 @@ public:
             for (const auto& neighbor : graph.getNeighbors(currentVertex)) {
                 if (closedSet.find(neighbor) != closedSet.end()) continue;  //如果鄰居在closedset中，則跳過
                 int pp = pred[currentVertex];  //取出前前驅
-                cout << "------------------------------------" << endl;
-                cout << "currentVertex: v" << currentVertex+1 << " neighbor: v" << neighbor+1 << " pred[currentVertex]: v" << pp+1 << endl;
+                //cout << "currentVertex: v" << currentVertex+1 << " neighbor: v" << neighbor+1 << " pp: v" << pp+1 << endl;
                 if(pp != -1)
                 {
                     if(lineOfSight(pp, neighbor, graph, obstacles))
                     {
-                        cout << "line of sight success" << endl;
+                        //cout << "line of sight success" << endl;
                         double edgeWeight1 = graph.getEdgeWeight(currentVertex, neighbor);   //取出邊的權重
                         double edgeWeight2 = dist[currentVertex] - dist[pp];   //取出邊的權重
                         double dx = graph.getVertexProperty(neighbor).value.getX() - graph.getVertexProperty(pp).value.getX();
@@ -147,16 +150,16 @@ public:
                         double dz = graph.getVertexProperty(neighbor).value.getZ() - graph.getVertexProperty(pp).value.getZ();
                         double edgeWeightPP = sqrt(dx * dx + dy * dy + dz * dz);   //取出邊的權重
 
-                        //cout << "edgeWeightPP " << edgeWeightPP << ", edgeWeight1 + edgeWeight2 " << edgeWeight1 + edgeWeight2 << endl;
+                        //cout << "edgeWeight1: " << edgeWeight1 << " edgeWeight2: " << edgeWeight2 << endl;
+                        //cout << "edgeWeightPP: " << edgeWeightPP << endl;
 
-                        if(edgeWeightPP < edgeWeight1 + edgeWeight2)    //如果新的邊的權重小於原本的權重
+                        if(edgeWeightPP < edgeWeight1 + edgeWeight2)
                         {
                             double alt = dist[pp] + edgeWeightPP; //計算新的距離
                             if (alt < dist[neighbor]) { //如果新的距離小於原本的距離
                                 dist[neighbor] = alt;   //更新距離
                                 pred[neighbor] = pp; //更新前驅
                                 open.push({dist[neighbor] + heuristic.get(graph, neighbor, target), neighbor});   //將(距離，鄰居)放入openqueue
-                                cout << "actually success" << endl;
                             }
                         }
                         else
@@ -166,12 +169,10 @@ public:
                                 dist[neighbor] = alt;   //更新距離
                                 pred[neighbor] = currentVertex; //更新前驅
                                 open.push({dist[neighbor] + heuristic.get(graph, neighbor, target), neighbor});   //將(距離，鄰居)放入openqueue
-                                cout << "actually fail" << endl;
                             }
                         }
                     }else
                     {
-                        cout << "line of sight fail" << endl;
                         double edgeWeight = graph.getEdgeWeight(currentVertex, neighbor);   //取出邊的權重
                         double alt = dist[currentVertex] + edgeWeight; //計算新的距離
                         if (alt < dist[neighbor]) { //如果新的距離小於原本的距離
@@ -207,7 +208,10 @@ int main() {
 
     //KIZ1: 
     double minX1 = 10.3 + 0.2, minY1 = -10.2 + 0.2, minZ1 = 4.32 + 0.2, maxX1 = 11.55 - 0.2, maxY1 = -6.0 - 0.2, maxZ1 = 5.57 - 0.2;
+    //KIZ2: 
+    //double minX2 = 9.5, minY2 = -10.5, minZ2 = 4.02, maxX2 = 10.5, maxY2 = -9.6, maxZ2 = 4.8;
 
+    // find vertex number
     int num = 0;
 
     for(double x = minX1; x <= maxX1; x += 0.05)
@@ -273,30 +277,12 @@ int main() {
             }
             else
             {
-                if(vertexLocation.find({x+0.05, y, z}) != vertexLocation.end())
-                {
-                    graph.addDirectedEdge(i, vertexLocation[{x+0.05, y, z}], 0.05);
-                }
-                if(vertexLocation.find({x, y+0.05, z}) != vertexLocation.end())
-                {
-                    graph.addDirectedEdge(i, vertexLocation[{x, y+0.05, z}], 0.05);
-                }
-                if(vertexLocation.find({x, y, z+0.05}) != vertexLocation.end())
-                {
-                    graph.addDirectedEdge(i, vertexLocation[{x, y, z+0.05}], 0.05);
-                }
-                if(vertexLocation.find({x-0.05, y, z}) != vertexLocation.end())
-                {
-                    graph.addDirectedEdge(i, vertexLocation[{x-0.05, y, z}], 0.05);
-                }
-                if(vertexLocation.find({x, y-0.05, z}) != vertexLocation.end())
-                {
-                    graph.addDirectedEdge(i, vertexLocation[{x, y-0.05, z}], 0.05);
-                }
-                if(vertexLocation.find({x, y, z-0.05}) != vertexLocation.end())
-                {
-                    graph.addDirectedEdge(i, vertexLocation[{x, y, z-0.05}], 0.05);
-                }
+                graph.addDirectedEdge(i, vertexLocation[{x+0.05, y, z}], 0.05);
+                graph.addDirectedEdge(i, vertexLocation[{x, y+0.05, z}], 0.05);
+                graph.addDirectedEdge(i, vertexLocation[{x, y, z+0.05}], 0.05);
+                graph.addDirectedEdge(i, vertexLocation[{x-0.05, y, z}], 0.05);
+                graph.addDirectedEdge(i, vertexLocation[{x, y-0.05, z}], 0.05);
+                graph.addDirectedEdge(i, vertexLocation[{x, y, z-0.05}], 0.05);
             }
         }
     }
@@ -373,6 +359,10 @@ int main() {
             }
         }
 
+        // Print vertex property
+        //cout << "source: " << graph.getVertexProperty(s).value.getX() << " " << graph.getVertexProperty(s).value.getY() << " " << graph.getVertexProperty(s).value.getZ() << endl; 
+        //cout << "target: " << graph.getVertexProperty(t).value.getX() << " " << graph.getVertexProperty(t).value.getY() << " " << graph.getVertexProperty(t).value.getZ() << endl;
+
         Vertex source = s;
         Vertex target = t;
 
@@ -388,6 +378,8 @@ int main() {
             }
         }
 
+        //cout << num << endl;
+        
         // Run Theta* algorithm
         std::stack<Vertex> path = ThetaStar::run(source, target, graph, heuristic, obstacles);
 
@@ -403,7 +395,7 @@ int main() {
             << ", z = " << graph.getVertexProperty(path.top().getId()).value.getZ() << ")"
             << "->" << endl;
             passingVertex.push_back({graph.getVertexProperty(path.top().getId()).value.getX(), graph.getVertexProperty(path.top().getId()).value.getY(), graph.getVertexProperty(path.top().getId()).value.getZ()});
-            
+            turningCount++;
             path.pop();
         }
 
@@ -411,20 +403,12 @@ int main() {
         {
             outputfile << passingVertex[i][0] << "," << passingVertex[i][1] << "," << passingVertex[i][2] << "," << passingVertex[i+1][0] << "," << passingVertex[i+1][1] << "," << passingVertex[i+1][2] << endl;
         }
-        
-        for(unsigned int i = 0; i < passingVertex.size() - 1; i++)
-        {
-            double dx = passingVertex[i+1][0] - passingVertex[i][0];
-            double dy = passingVertex[i+1][1] - passingVertex[i][1];
-            double dz = passingVertex[i+1][2] - passingVertex[i][2];
-            totalLength += sqrt(dx * dx + dy * dy + dz * dz);
-            turningCount++;
-        }
+        turningCount--;
     }
 
-    
+    turningCount--;
     cout << "Distance: " << totalLength << endl;
-    cout << "turningCount: " << turningCount - 1 << endl;
+    cout << "turningCount: " << turningCount << endl;
     outputfile.close();
     inputfile.close();
     std::cout << std::endl;
