@@ -109,6 +109,7 @@ public:
 
     static std::stack<Vertex> run(const Vertex& source, const Vertex& target, const Graph<Block, double>& graph,
                                   const HeuristicInterface& heuristic, const std::vector<Obstacle>& obstacles) {
+        ofstream outputNeighborFile("neighbor.txt");
         std::vector<double> dist(graph.size(), std::numeric_limits<double>::max());
         std::vector<int> pred(graph.size(), -1);
         std::unordered_set<int> closedSet;
@@ -131,6 +132,14 @@ public:
             closedSet.insert(currentVertex);    //將最小值放入closedset
 
             for (const auto& neighbor : graph.getNeighbors(currentVertex)) {
+                // 輸出鄰居
+                for(int i = 0; i < graph.getNeighbors(currentVertex).size(); i++)
+                {
+                    cout << "v" << graph.getNeighbors(currentVertex)[i]+1 << " ";
+                    outputNeighborFile << graph.getNeighbors(currentVertex)[i]+1 << " ";
+                }
+                cout << endl;
+                outputNeighborFile << endl;
                 if (closedSet.find(neighbor) != closedSet.end()) continue;  //如果鄰居在closedset中，則跳過
                 int pp = pred[currentVertex];  //取出前前驅
                 cout << "------------------------------------" << endl;
@@ -193,6 +202,8 @@ public:
                 //cout << endl;
             }
         }
+
+        outputNeighborFile.close();
         
         //cout << endl;
         return std::stack<Vertex>();    //回傳空的stack
@@ -201,12 +212,10 @@ public:
 
 int main() {
     vector<Obstacle> obstacles = {
-    Obstacle(10.87, -9.5, 4.27, 11.6, -9.45, 4.97), Obstacle(10.25, -9.5, 4.97, 10.87, -9.45, 5.62)
-    , Obstacle(10.87, -8.5, 4.97, 11.6, -8.45, 5.62), Obstacle(10.25, -8.5, 4.27, 10.7, -8.45, 4.97)
-    , Obstacle(10.87, -7.40, 4.27, 11.6, -7.35, 4.97), Obstacle(10.25, -7.40, 4.97, 10.87, -7.35, 5.62)};
+    Obstacle(10, 2, 0, 12, 7, 0),};
 
     //KIZ1: 
-    double minX1 = 10.3 + 0.2, minY1 = -10.2 + 0.2, minZ1 = 4.32 + 0.2, maxX1 = 11.55 - 0.2, maxY1 = -6.0 - 0.2, maxZ1 = 5.57 - 0.2;
+    double minX1 = 0, minY1 = 0, minZ1 = 0, maxX1 = 20, maxY1 = 12, maxZ1 = 0;
 
     int num = 0;
 
@@ -255,7 +264,7 @@ int main() {
 
         for (const auto& obstacle : obstacles)
         {
-            if (x > obstacle.minX-0.2 && x < obstacle.maxX+0.2 && y > obstacle.minY-0.2 && y < obstacle.maxY+0.2 && z > obstacle.minZ-0.2 && z < obstacle.maxZ+0.2) {
+            if (x > obstacle.minX && x < obstacle.maxX && y > obstacle.minY && y < obstacle.maxY && z > obstacle.minZ && z < obstacle.maxZ) {
                 inObstacleFlag = true;
                 break;
             }
@@ -312,6 +321,17 @@ int main() {
         cout << "File not found" << endl;
         return 0;
     }
+
+    ofstream outputvertexLocFile("vertexLoc.txt");
+
+    for (int i = 0; i < num; i++)
+    {
+        outputvertexLocFile << i << " " << graph.getVertexProperty(i).value.getX() - 0.025 << " " << graph.getVertexProperty(i).value.getY() - 0.025 << " " << graph.getVertexProperty(i).value.getZ() - 0.025 << " " << graph.getVertexProperty(i).value.getX() + 0.025 << " " << graph.getVertexProperty(i).value.getY() + 0.025 << " " << graph.getVertexProperty(i).value.getZ() + 0.025 << endl;
+    }
+
+    outputvertexLocFile.close();
+
+    
 
     ofstream outputfile("Paths.csv");
 
