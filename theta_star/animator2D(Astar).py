@@ -82,11 +82,11 @@ current_index = 0
 
 def update(frame):
     global search_index, current_index
-    # if search_index < len(search_steps):
-    #     current, neighbor = search_steps[search_index]
-    #     ax.add_patch(plt.Rectangle(neighbor, 1, 1, color='green', alpha=0.3))
-    #     ax.plot([current[0] + 0.5, neighbor[0] + 0.5], [current[1] + 0.5, neighbor[1] + 0.5], color='green', alpha=0.3)
-    #     search_index += 1
+    if search_index < len(search_steps):
+        current, neighbor = search_steps[search_index]
+        ax.add_patch(plt.Rectangle(neighbor, 1, 1, color='green', alpha=0.3))
+        ax.plot([current[0] + 0.5, neighbor[0] + 0.5], [current[1] + 0.5, neighbor[1] + 0.5], color='green', alpha=0.3)
+        search_index += 1
     if current_index < len(path):
         node = path[current_index]
         ax.add_patch(plt.Rectangle(node, 1, 1, color='blue', alpha=0.5))
@@ -111,6 +111,9 @@ def update(frame):
 
 # Create animation
 ani = animation.FuncAnimation(fig, update, frames=range(max(len(search_steps), len(path))), interval=200, repeat=False)
+
+# title
+plt.title("A* Algorithm")
 
 # Show the plot
 plt.show()
