@@ -34,4 +34,4 @@ public class Main {
 							bestSolution[2].x + ", " + bestSolution[2].y + ")");
 		System.out.println("目標函數值: " + SimulatedAnnealingPath.objectiveFunction(bestSolution[0], bestSolution[1], bestSolution[2]));
 	}
-}
+} 
