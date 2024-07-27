@@ -5,7 +5,7 @@ import heapq
 
 # Define the grid size and obstacles
 GRID_SIZE = 20
-OBSTACLES = [(5, 5), (5, 6), (5, 7), (5, 8), (5, 9), (5, 10), (5, 11), (5, 12), (12, 6), (12, 7), (12, 8), (12, 8), (12, 9), (12, 10), (12, 11), (12, 12), (12, 13), (12, 14), (12, 15), (12, 16)]
+OBSTACLES = [(8, 5), (8, 6), (8, 7), (8, 8), (8, 9), (8, 10), (8, 11), (8, 12), (8, 13), (8, 14)]
 START = (0, 0)
 GOAL = (19, 19)
 
@@ -171,7 +171,7 @@ def update(frame):
         return []
 
 # Create animation
-ani = animation.FuncAnimation(fig, update, frames=range(len(search_steps) + len(path) + 25), interval=200, repeat=False)
+ani = animation.FuncAnimation(fig, update, frames=range(len(search_steps) + len(path) + 25), interval=100, repeat=True)
 
 # Set the title
 plt.title('Theta* Search Algorithm')

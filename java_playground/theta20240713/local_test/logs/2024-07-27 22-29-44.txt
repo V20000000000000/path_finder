@@ -1,0 +1,11 @@
+2024-07-27 22:29:44.509 INFO PathFindingAPI: Building graph with expansion value: 0.2
+2024-07-27 22:29:44.567 INFO PathFindingAPI: Graph built
+2024-07-27 22:29:45.112 INFO PathFindingAPI: -------------------------------------------result-------------------------------------------
+2024-07-27 22:29:45.113 INFO PathFindingAPI: x: 10.9 y: -10.0 z: 5.120000000000001
+2024-07-27 22:29:45.113 INFO PathFindingAPI: x: 11.1 y: -9.7 z: 5.170000000000001
+2024-07-27 22:29:45.113 INFO PathFindingAPI: x: 11.1 y: -9.25 z: 5.170000000000001
+2024-07-27 22:29:45.113 INFO PathFindingAPI: x: 11.2 y: -8.65 z: 4.720000000000001
+2024-07-27 22:29:45.113 INFO PathFindingAPI: x: 11.25 y: -8.25 z: 4.7700000000000005
+2024-07-27 22:29:45.113 INFO PathFindingAPI: x: 11.2 y: -7.6 z: 5.170000000000001
+2024-07-27 22:29:45.113 INFO PathFindingAPI: x: 11.2 y: -7.15 z: 5.170000000000001
+2024-07-27 22:29:45.113 INFO PathFindingAPI: x: 11.2 y: -6.75 z: 4.87
