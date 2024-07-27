@@ -1,12 +1,5 @@
 package sa;
 
-import pathfinding.*;
-
-import algorithm.*;
-import pathfinding.*;
-import java.util.*;
-
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -110,19 +103,5 @@ public class SimulatedAnnealingPath {
         }
         return Math.exp((currentEnergy - newEnergy) / temperature);
     }
-
-    public static void main(String[] args) {
-        setStartPoint(0, 0);
-        setEndPoint(10, 10);
-
-        setRange1(1, 3, 1, 3);
-        setRange2(4, 6, 4, 6);
-        setRange3(7, 9, 7, 9);
-
-        Coordinate[] bestSolution = simulatedAnnealing();
-        System.out.println("最優解: (" + bestSolution[0].x + ", " + bestSolution[0].y + ") -> (" +
-                            bestSolution[1].x + ", " + bestSolution[1].y + ") -> (" +
-                            bestSolution[2].x + ", " + bestSolution[2].y + ")");
-        System.out.println("目標函數值: " + objectiveFunction(bestSolution[0], bestSolution[1], bestSolution[2]));
-    }
 }
+
