@@ -1,5 +1,6 @@
 package pathfinding;
 
+import sa.Coordinate;
 
 public class Point extends Vec3d {
     public Point() {

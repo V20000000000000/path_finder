@@ -81,7 +81,7 @@ public class PathfindingMain {
             List<Point> result = extractPath(path, graph);
             // remove the first point since it is the starting point
 //            result.remove(0);
-            logPoints(result, "result");
+            //logPoints(result, "result");
             return result;
         }
 
@@ -242,8 +242,8 @@ public class PathfindingMain {
         }
 
         private static void logPoints(List<Point> points, String label) {
-            Log.i(TAG, "-------------------------------------------" + label
-                    + "-------------------------------------------");
+            //Log.i(TAG, "-------------------------------------------" + label
+            //        + "-------------------------------------------");
             for (Point p : points) {
                 Log.i(TAG, "x: " + p.getX() + " y: " + p.getY() + " z: " + p.getZ());
             }
