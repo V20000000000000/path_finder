@@ -3,32 +3,24 @@ package main;
 import java.util.List;
 
 import pathfinding.*;
-import pathfinding.PathfindingMain.PathFindingAPI;
 import sa.*;
 
 
 public class Main {
 
-	public static void main(String[] args) {
-		// List<Point> path = PathFindingAPI.findPath(new Point(10.9078d, -10.0293d, 5.1124d),
-		// 		new Point(11.1852d, -6.7607d, 4.8828d), 0.2);
+    public static void main(String[] args) {
+        SimulatedAnnealingPath.setStartPoint(9.815, -9.806, 4.293);
+        SimulatedAnnealingPath.setEndPoint(11.143, -6.607, 4.9654);
 
-		// Log.close();
-
-		SimulatedAnnealingPath.setStartPoint(0, 0, 0);
-        SimulatedAnnealingPath.setEndPoint(10, 10, 10);
-
-        SimulatedAnnealingPath.setRange1(1, 3, 1, 3, 1, 3);
-        SimulatedAnnealingPath.setRange2(4, 6, 4, 6, 4, 6);
-        SimulatedAnnealingPath.setRange3(7, 9, 7, 9, 7, 9);
+        SimulatedAnnealingPath.setRange1(10.42, 10.58, -10.38, 11.48, 4.82, 5.57);
+        SimulatedAnnealingPath.setRange2(10.3, 11.55, -9.25, -8.5, 3.76203, 3.96203);
+        SimulatedAnnealingPath.setRange3(9.866984, 10.066984, -7.34, -6.365, 4.32, 5.57);
 
         Coordinate[] bestSolution = SimulatedAnnealingPath.simulatedAnnealing();
-        System.out.println("最優解: (" + bestSolution[0].x + ", " + bestSolution[0].y + ", " + bestSolution[0].z + ") -> (" +
-                            bestSolution[1].x + ", " + bestSolution[1].y + ", " + bestSolution[1].z + ") -> (" +
-                            bestSolution[2].x + ", " + bestSolution[2].y + ", " + bestSolution[2].z + ")");
+        System.out.println("Best solution: ");
+        for (Coordinate coordinate : bestSolution) {
+            System.out.println(coordinate);
+        }
+    }
+}
 
-		//print all the points in the bestSolution, including the start and end points and the points between range1, range2, and range3
-		
-        System.out.println("目標函數值: " + SimulatedAnnealingPath.objectiveFunction(bestSolution[0], bestSolution[1], bestSolution[2]));
-	}
-} 

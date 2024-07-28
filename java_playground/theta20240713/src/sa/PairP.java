@@ -1,25 +1,21 @@
 package sa;
 
-public class PairP<K, V> {
-    private final K key;
-    private final V value;
+public class PairP<F, S> {
+    private final F first;
+    private final S second;
 
-    public PairP(K key, V value) {
-        this.key = key;
-        this.value = value;
+    public PairP(F first, S second) {
+        this.first = first;
+        this.second = second;
     }
 
-    public K getKey() {
-        return key;
+    public F getFirst() {
+        return first;
     }
 
-    public V getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return "(" + key + ", " + value + ")";
+    public S getSecond() {
+        return second;
     }
 }
+
 
